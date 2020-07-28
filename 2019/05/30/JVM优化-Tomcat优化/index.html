@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/icon.ico?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/icon2.ico?v=7.0.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.0.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: true,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="JVM优化+Tomcat优化 Tomcat8的优化 看懂Java底层字节码 编码的优化建议">
+<meta name="keywords" content="JVM,Tomcat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM优化+Tomcat优化">
+<meta property="og:url" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/index.html">
+<meta property="og:site_name" content="我就是BestQiang">
+<meta property="og:description" content="JVM优化+Tomcat优化 Tomcat8的优化 看懂Java底层字节码 编码的优化建议">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537885756741.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537886442880.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537886585179.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537886617256.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537886721693.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537886760361.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537886904896.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537887017961.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537891844779.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537892225489.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537892698827.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537946855605.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537949454864.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537949516687.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537949587540.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537949628061.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537949711256.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537949830874.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537949884794.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537949923207.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537949965832.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537950040975.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537952165502.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537952849110.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537968506080.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537970361030.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537970437128.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537970530920.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537970575424.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537970641386.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1538727715123.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537971815919.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537971838198.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1538732278070.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1538732664770.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1538732998659.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1538733508872.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1538747028764.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1538012232502.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1538012634194.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1538013060119.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1538013925947.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1538014237594.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1538015127822.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1538015681175.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1538016117073.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1538019510782.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1538019458636.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1538065414765.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1538065819308.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1538066431935.png">
+<meta property="og:updated_time" content="2020-07-27T09:25:36.491Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JVM优化+Tomcat优化">
+<meta name="twitter:description" content="JVM优化+Tomcat优化 Tomcat8的优化 看懂Java底层字节码 编码的优化建议">
+<meta name="twitter:image" content="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/1537885756741.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="我就是BestQiang" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>JVM优化+Tomcat优化 | 我就是BestQiang</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+<a href="https://github.com/BestQiang" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">我就是BestQiang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">活着就是为了改变世界，难道还有其他原因吗？</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/30/JVM优化-Tomcat优化/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="BestQiang">
+      <meta itemprop="description" content="技术的进步来自于不懈的追求!">
+      <meta itemprop="image" content="/uploads/wxy.JPEG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="我就是BestQiang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">JVM优化+Tomcat优化
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-30 15:44:48" itemprop="dateCreated datePublished" datetime="2019-05-30T15:44:48+08:00">2019-05-30</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-07-27 17:25:36" itemprop="dateModified" datetime="2020-07-27T17:25:36+08:00">2020-07-27</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2019/05/30/JVM优化-Tomcat优化/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/30/JVM优化-Tomcat优化/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+            <span id="/2019/05/30/JVM优化-Tomcat优化/" class="leancloud_visitors" data-flag-title="JVM优化+Tomcat优化">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读次数：</span>
+              
+                <span class="leancloud-visitors-count"></span>
+            </span>
+          
+
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">44k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">1:20</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="JVM优化-Tomcat优化"><a href="#JVM优化-Tomcat优化" class="headerlink" title="JVM优化+Tomcat优化"></a>JVM优化+Tomcat优化</h2><ul>
+<li>Tomcat8的优化</li>
+<li>看懂Java底层字节码</li>
+<li>编码的优化建议</li>
+</ul>
+<a id="more"></a>
+<h2 id="1、Tomcat8优化"><a href="#1、Tomcat8优化" class="headerlink" title="1、Tomcat8优化"></a>1、Tomcat8优化</h2><p>tomcat服务器在JavaEE项目中使用率非常高，所以在生产环境对tomcat的优化也变得非常重要了。</p>
+<p>对于tomcat的优化，主要是从2个方面入手，一是，tomcat自身的配置，另一个是tomcat所运行的jvm虚拟机的调优。</p>
+<p>下面我们将从这2个方面进行讲解。</p>
+<h3 id="1-1、Tomcat配置优化"><a href="#1-1、Tomcat配置优化" class="headerlink" title="1.1、Tomcat配置优化"></a>1.1、Tomcat配置优化</h3><h4 id="1-1-1、部署安装tomcat8"><a href="#1-1-1、部署安装tomcat8" class="headerlink" title="1.1.1、部署安装tomcat8"></a>1.1.1、部署安装tomcat8</h4><p>下载并安装：</p>
+<p><a href="https://tomcat.apache.org/download-80.cgi" target="_blank" rel="noopener">https://tomcat.apache.org/download-80.cgi</a></p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537885756741.png" alt="1537885756741"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">cd /tmp</span><br><span class="line">wget http://mirrors.tuna.tsinghua.edu.cn/apache/tomcat/tomcat-8/v8.5.34/bin/apache-tomcat-8.5.34.tar.gz</span><br><span class="line"></span><br><span class="line">tar -xvf apache-tomcat-8.5.34.tar.gz</span><br><span class="line">cd apache-tomcat-8.5.34/conf</span><br><span class="line"><span class="meta">#</span><span class="bash">修改配置文件，配置tomcat的管理用户</span></span><br><span class="line">vim tomcat-users.xml</span><br><span class="line"><span class="meta">#</span><span class="bash">写入如下内容：</span></span><br><span class="line">&lt;role rolename="manager"/&gt;</span><br><span class="line">&lt;role rolename="manager-gui"/&gt;</span><br><span class="line">&lt;role rolename="admin"/&gt;</span><br><span class="line">&lt;role rolename="admin-gui"/&gt;</span><br><span class="line">&lt;user username="tomcat" password="tomcat" roles="admin-gui,admin,manager-gui,manager"/&gt;</span><br><span class="line"><span class="meta">#</span><span class="bash">保存退出</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">如果是tomcat7，配置了tomcat用户就可以登录系统了，但是tomcat8中不行，还需要修改另一个配置文件，否则访问不了，提示403</span></span><br><span class="line">vim webapps/manager/META-INF/context.xml</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">将&lt;Valve的内容注释掉</span></span><br><span class="line">&lt;Context antiResourceLocking="false" privileged="true" &gt;</span><br><span class="line"> &lt;!-- &lt;Valve className="org.apache.catalina.valves.RemoteAddrValve"</span><br><span class="line">         allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" /&gt; --&gt;</span><br><span class="line">  &lt;Manager sessionAttributeValueClassNameFilter="java\.lang\.(?:Boolean|Integer|Long|Number|String)|org\.apache\.catalina\.filters\.CsrfPreventionFilter\$LruCache(?:\$1)?|java\.util\.(?:Linked)?HashMap"/&gt;</span><br><span class="line">&lt;/Context&gt;</span><br><span class="line"><span class="meta">#</span><span class="bash">保存退出即可</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">启动tomcat</span></span><br><span class="line">cd /tmp/apache-tomcat-8.5.34/bin/</span><br><span class="line">./startup.sh &amp;&amp; tail -f ../logs/catalina.out</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">打开浏览器进行测试访问</span></span><br><span class="line">http://192.168.40.133:8080/</span><br></pre></td></tr></table></figure>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537886442880.png" alt="1537886442880"></p>
+<p>点击“Server Status”，输入用户名、密码进行登录，tomcat/tomcat</p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537886585179.png" alt="1537886585179"></p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537886617256.png" alt="1537886617256"></p>
+<p>进入之后即可看到服务的信息。</p>
+<h4 id="1-1-2、禁用AJP连接"><a href="#1-1-2、禁用AJP连接" class="headerlink" title="1.1.2、禁用AJP连接"></a>1.1.2、禁用AJP连接</h4><p>在服务状态页面中可以看到，默认状态下会启用AJP服务，并且占用8009端口。</p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537886721693.png" alt="1537886721693"></p>
+<p>什么是AJP呢？</p>
+<p>AJP（Apache JServer Protocol）<br>AJPv13协议是面向包的。WEB服务器和Servlet容器通过TCP连接来交互；为了节省SOCKET创建的昂贵代价，WEB服务器会尝试维护一个永久TCP连接到servlet容器，并且在多个请求和响应周期过程会重用连接。</p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537886760361.png" alt="1537886760361"></p>
+<p>我们一般是使用Nginx+tomcat的架构，所以用不着AJP协议，所以把AJP连接器禁用。</p>
+<p>修改conf下的server.xml文件，将AJP服务禁用掉即可。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;Connector port="8009" protocol="AJP/1.3" redirectPort="8443" /&gt;</span><br></pre></td></tr></table></figure>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537886904896.png" alt="1537886904896"></p>
+<p>重启tomcat，查看效果。</p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537887017961.png" alt="1537887017961"></p>
+<p>可以看到AJP服务以及不存在了。</p>
+<h4 id="1-1-3、执行器（线程池）"><a href="#1-1-3、执行器（线程池）" class="headerlink" title="1.1.3、执行器（线程池）"></a>1.1.3、执行器（线程池）</h4><p>在tomcat中每一个用户请求都是一个线程，所以可以使用线程池提高性能。</p>
+<p>修改server.xml文件：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--将注释打开--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Executor</span> <span class="attr">name</span>=<span class="string">"tomcatThreadPool"</span> <span class="attr">namePrefix</span>=<span class="string">"catalina-exec-"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">maxThreads</span>=<span class="string">"500"</span> <span class="attr">minSpareThreads</span>=<span class="string">"50"</span> <span class="attr">prestartminSpareThreads</span>=<span class="string">"true"</span> <span class="attr">maxQueueSize</span>=<span class="string">"100"</span>/&gt;</span></span><br><span class="line"><span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">参数说明：</span></span><br><span class="line"><span class="comment">maxThreads：最大并发数，默认设置 200，一般建议在 500 ~ 1000，根据硬件设施和业务来判断</span></span><br><span class="line"><span class="comment">minSpareThreads：Tomcat 初始化时创建的线程数，默认设置 25</span></span><br><span class="line"><span class="comment">prestartminSpareThreads： 在 Tomcat 初始化的时候就初始化 minSpareThreads 的参数值，如果不等于 true，minSpareThreads 的值就没啥效果了</span></span><br><span class="line"><span class="comment">maxQueueSize，最大的等待队列数，超过则拒绝请求</span></span><br><span class="line"><span class="comment">--&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--在Connector中设置executor属性指向上面的执行器--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Connector</span> <span class="attr">executor</span>=<span class="string">"tomcatThreadPool"</span>  <span class="attr">port</span>=<span class="string">"8080"</span> <span class="attr">protocol</span>=<span class="string">"HTTP/1.1"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">connectionTimeout</span>=<span class="string">"20000"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">redirectPort</span>=<span class="string">"8443"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<p>保存退出，重启tomcat，查看效果。</p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537891844779.png" alt="1537891844779"></p>
+<p>在页面中显示最大线程数为-1，这个是正常的，仅仅是显示的问题，实际使用的指定的值。</p>
+<p>也有人遇到这样的问题：<a href="https://blog.csdn.net/weixin_38278878/article/details/80144397" target="_blank" rel="noopener">https://blog.csdn.net/weixin_38278878/article/details/80144397</a></p>
+<h4 id="1-1-4、3种运行模式"><a href="#1-1-4、3种运行模式" class="headerlink" title="1.1.4、3种运行模式"></a>1.1.4、3种运行模式</h4><p>tomcat的运行模式有3种：</p>
+<ol>
+<li>bio<br>默认的模式,性能非常低下,没有经过任何优化处理和支持.</li>
+<li>nio<br>nio(new I/O)，是Java SE 1.4及后续版本提供的一种新的I/O操作方式(即java.nio包及其子包)。Java nio是一个基于缓冲区、并能提供非阻塞I/O操作的Java API，因此nio也被看成是non-blocking I/O的缩写。它拥有比传统I/O操作(bio)更好的并发运行性能。</li>
+<li>apr<br>安装起来最困难,但是从操作系统级别来解决异步的IO问题,大幅度的提高性能.</li>
+</ol>
+<p>推荐使用nio，不过，在tomcat8中有最新的nio2，速度更快，建议使用nio2.</p>
+<p>设置nio2：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Connector</span> <span class="attr">executor</span>=<span class="string">"tomcatThreadPool"</span>  <span class="attr">port</span>=<span class="string">"8080"</span> <span class="attr">protocol</span>=<span class="string">"org.apache.coyote.http11.Http11Nio2Protocol"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">connectionTimeout</span>=<span class="string">"20000"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">redirectPort</span>=<span class="string">"8443"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537892225489.png" alt="1537892225489"></p>
+<p>可以看到已经设置为nio2了。</p>
+<h3 id="1-2、部署测试用的java-web项目"><a href="#1-2、部署测试用的java-web项目" class="headerlink" title="1.2、部署测试用的java web项目"></a>1.2、部署测试用的java web项目</h3><p>为了方便测试性能，我们将部署一个java web项目，这个项目本身和本套课程没有什么关系，仅仅用于测试。</p>
+<blockquote>
+<p>注意：这里在测试时，我们使用一个新的tomcat，进行测试，后面再对其进行优化调整，再测试。</p>
+</blockquote>
+<h4 id="1-2-1、创建dashboard数据库"><a href="#1-2-1、创建dashboard数据库" class="headerlink" title="1.2.1、创建dashboard数据库"></a>1.2.1、创建dashboard数据库</h4><p>在资料中找到sql脚本文件dashboard.sql，在linux服务器上执行。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat dashboard.sql | mysql -uroot -proot</span><br></pre></td></tr></table></figure>
+<p>创建完成后，可以看到有3张表。</p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537892698827.png" alt="1537892698827"></p>
+<h4 id="1-2-2、部署web应用"><a href="#1-2-2、部署web应用" class="headerlink" title="1.2.2、部署web应用"></a>1.2.2、部署web应用</h4><p>在资料中找到itcat-dashboard-web.war，上传到linux服务器，进行部署安装。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">cd /tmp/apache-tomcat-8.5.34/webapps</span><br><span class="line">rm -rf *</span><br><span class="line">mkdir ROOT</span><br><span class="line">cd ROOT/</span><br><span class="line"></span><br><span class="line">rz上传war包</span><br><span class="line">jar -xvf itcat-dashboard-web.war</span><br><span class="line">rm -rf itcat-dashboard-web.war</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">修改数据库配置文件</span></span><br><span class="line">cd /tmp/apache-tomcat-8.5.34/webapps/ROOT/WEB-INF/classes</span><br><span class="line">vim jdbc.properties</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">这里根据自己的实际情况进行配置</span></span><br><span class="line"></span><br><span class="line">jdbc.driverClassName=com.mysql.jdbc.Driver</span><br><span class="line">jdbc.url=jdbc:mysql://node01:3306/dashboard?useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true&amp;allowMultiQueries=true</span><br><span class="line">jdbc.username=root</span><br><span class="line">jdbc.password=root</span><br></pre></td></tr></table></figure>
+<p>重新启动tomcat。</p>
+<p>访问首页，查看是否已经启动成功：<a href="http://192.168.40.133:8080/index" target="_blank" rel="noopener">http://192.168.40.133:8080/index</a> <img src="/2019/05/30/JVM优化-Tomcat优化/1537946855605.png" alt="1537946855605"></p>
+<h3 id="1-3、使用Apache-JMeter进行测试"><a href="#1-3、使用Apache-JMeter进行测试" class="headerlink" title="1.3、使用Apache JMeter进行测试"></a>1.3、使用Apache JMeter进行测试</h3><p>Apache Jmeter是开源的压力测试工具，我们借助于此工具进行测试，将测试出tomcat的吞吐量等信息。</p>
+<h4 id="1-3-1、下载安装"><a href="#1-3-1、下载安装" class="headerlink" title="1.3.1、下载安装"></a>1.3.1、下载安装</h4><p>下载地址：<a href="http://jmeter.apache.org/download_jmeter.cgi" target="_blank" rel="noopener">http://jmeter.apache.org/download_jmeter.cgi</a></p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537949454864.png" alt="1537949454864"></p>
+<p>安装：直接将下载好的zip压缩包进行解压即可。</p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537949516687.png" alt="1537949516687"></p>
+<p>进入bin目录，找到jmeter.bat文件，双机打开即可启动。</p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537949587540.png" alt="1537949587540"></p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537949628061.png" alt="1537949628061"></p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537949711256.png" alt="1537949711256"></p>
+<h4 id="1-3-2、修改主题和语言"><a href="#1-3-2、修改主题和语言" class="headerlink" title="1.3.2、修改主题和语言"></a>1.3.2、修改主题和语言</h4><p>默认的主题是黑色风格的主题并且语言是英语，这样不太方便使用，所以需要修改下主题和中文语言。</p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537949830874.png" alt="1537949830874"></p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537949884794.png" alt="1537949884794"></p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537949923207.png" alt="1537949923207"></p>
+<p>主题修改完成。</p>
+<p>接下来设置语言为简体中文。</p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537949965832.png" alt="1537949965832"></p>
+<p>语言修改完成。 <img src="/2019/05/30/JVM优化-Tomcat优化/1537950040975.png" alt="1537950040975"></p>
+<h4 id="1-3-3、创建首页的测试用例"><a href="#1-3-3、创建首页的测试用例" class="headerlink" title="1.3.3、创建首页的测试用例"></a>1.3.3、创建首页的测试用例</h4><p>第一步：保存测试用例 <img src="/2019/05/30/JVM优化-Tomcat优化/1537952165502.png" alt="1537952165502"></p>
+<p>第二步：添加线程组，使用线程模拟用户的并发</p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537952849110.png" alt="1537952849110"></p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537968506080.png" alt="1537968506080"></p>
+<p>1000个线程，每个线程循环10次，也就是tomcat会接收到10000个请求。</p>
+<p>第三步：添加http请求</p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537970361030.png" alt="1537970361030"></p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537970437128.png" alt="1537970437128"></p>
+<p>第四步：添加请求监控</p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537970530920.png" alt="1537970530920"></p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537970575424.png" alt="1537970575424"></p>
+<h4 id="1-3-4、启动、进行测试"><a href="#1-3-4、启动、进行测试" class="headerlink" title="1.3.4、启动、进行测试"></a>1.3.4、启动、进行测试</h4><p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537970641386.png" alt="1537970641386"></p>
+<h4 id="1-3-5、聚合报告"><a href="#1-3-5、聚合报告" class="headerlink" title="1.3.5、聚合报告"></a>1.3.5、聚合报告</h4><p>在聚合报告中，重点看吞吐量。</p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1538727715123.png" alt="1538727715123"></p>
+<h3 id="1-4、调整tomcat参数进行优化"><a href="#1-4、调整tomcat参数进行优化" class="headerlink" title="1.4、调整tomcat参数进行优化"></a>1.4、调整tomcat参数进行优化</h3><p>通过上面测试可以看出，tomcat在不做任何调整时，吞吐量为73次/秒。</p>
+<h4 id="1-4-1、禁用AJP服务"><a href="#1-4-1、禁用AJP服务" class="headerlink" title="1.4.1、禁用AJP服务"></a>1.4.1、禁用AJP服务</h4><p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537971815919.png" alt="1537971815919"></p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1537971838198.png" alt="1537971838198"></p>
+<p>可以看到，禁用AJP服务后，吞吐量会有所提升。</p>
+<p>当然了，测试不一定准确，需要多测试几次才能看出是否有提升。</p>
+<h4 id="1-4-2、设置线程池"><a href="#1-4-2、设置线程池" class="headerlink" title="1.4.2、设置线程池"></a>1.4.2、设置线程池</h4><p>通过设置线程池，调整线程池相关的参数进行测试tomcat的性能。</p>
+<h5 id="1-4-2-1、最大线程数为500，初始为50"><a href="#1-4-2-1、最大线程数为500，初始为50" class="headerlink" title="1.4.2.1、最大线程数为500，初始为50"></a>1.4.2.1、最大线程数为500，初始为50</h5><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Executor</span> <span class="attr">name</span>=<span class="string">"tomcatThreadPool"</span> <span class="attr">namePrefix</span>=<span class="string">"catalina-exec-"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">maxThreads</span>=<span class="string">"500"</span> <span class="attr">minSpareThreads</span>=<span class="string">"50"</span> <span class="attr">prestartminSpareThreads</span>=<span class="string">"true"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<p>测试结果：</p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1538732278070.png" alt="1538732278070"></p>
+<p>吞吐量为128次/秒，性能有所提升。</p>
+<h5 id="1-4-2-2、最大线程数为1000，初始为200"><a href="#1-4-2-2、最大线程数为1000，初始为200" class="headerlink" title="1.4.2.2、最大线程数为1000，初始为200"></a>1.4.2.2、最大线程数为1000，初始为200</h5><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Executor</span> <span class="attr">name</span>=<span class="string">"tomcatThreadPool"</span> <span class="attr">namePrefix</span>=<span class="string">"catalina-exec-"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">maxThreads</span>=<span class="string">"1000"</span> <span class="attr">minSpareThreads</span>=<span class="string">"200"</span> <span class="attr">prestartminSpareThreads</span>=<span class="string">"true"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1538732664770.png" alt="1538732664770"></p>
+<p>吞吐量为151，性能有所提升。</p>
+<h5 id="1-4-2-3、最大线程数为5000，初始为1000"><a href="#1-4-2-3、最大线程数为5000，初始为1000" class="headerlink" title="1.4.2.3、最大线程数为5000，初始为1000"></a>1.4.2.3、最大线程数为5000，初始为1000</h5><p>是否是线程数最多，速度越快呢？ 我们来测试下。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Executor</span> <span class="attr">name</span>=<span class="string">"tomcatThreadPool"</span> <span class="attr">namePrefix</span>=<span class="string">"catalina-exec-"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">maxThreads</span>=<span class="string">"5000"</span> <span class="attr">minSpareThreads</span>=<span class="string">"1000"</span> <span class="attr">prestartminSpareThreads</span>=<span class="string">"true"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1538732998659.png" alt="1538732998659"></p>
+<p>可以看到，虽然最大线程已经设置到5000，但是实际测试效果并不理想，并且平均的响应时间也边长了，所以单纯靠提升线程数量是不能一直得到性能提升的。</p>
+<h5 id="1-4-2-4、设置最大等待队列数"><a href="#1-4-2-4、设置最大等待队列数" class="headerlink" title="1.4.2.4、设置最大等待队列数"></a>1.4.2.4、设置最大等待队列数</h5><p>默认情况下，请求发送到tomcat，如果tomcat正忙，那么该请求会一直等待。这样虽然可以保证每个请求都能请求到，但是请求时间就会边长。</p>
+<p>有些时候，我们也不一定要求请求一定等待，可以设置最大等待队列大小，如果超过就不等待了。这样虽然有些请求是失败的，但是请求时间会虽短。典型的应用：12306。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--最大等待数为100--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Executor</span> <span class="attr">name</span>=<span class="string">"tomcatThreadPool"</span> <span class="attr">namePrefix</span>=<span class="string">"catalina-exec-"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">maxThreads</span>=<span class="string">"500"</span> <span class="attr">minSpareThreads</span>=<span class="string">"100"</span> <span class="attr">prestartminSpareThreads</span>=<span class="string">"true"</span> <span class="attr">maxQueueSize</span>=<span class="string">"100"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1538733508872.png" alt="1538733508872"></p>
+<p>测试结果：</p>
+<ul>
+<li>平均响应时间：3.1秒<ul>
+<li>响应时间明显缩短</li>
+</ul>
+</li>
+<li>错误率：49.88%<ul>
+<li>错误率提升到一半，也可以理解，最大线程为500，测试的并发为1000</li>
+</ul>
+</li>
+<li>吞吐量：238次/秒<ul>
+<li>吞吐量明显提升</li>
+</ul>
+</li>
+</ul>
+<p>结论：响应时间、吞吐量这2个指标需要找到平衡才能达到更好的性能。</p>
+<h4 id="1-4-3、设置nio2的运行模式"><a href="#1-4-3、设置nio2的运行模式" class="headerlink" title="1.4.3、设置nio2的运行模式"></a>1.4.3、设置nio2的运行模式</h4><p>将最大线程设置为500进行测试：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Executor</span> <span class="attr">name</span>=<span class="string">"tomcatThreadPool"</span> <span class="attr">namePrefix</span>=<span class="string">"catalina-exec-"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">maxThreads</span>=<span class="string">"500"</span> <span class="attr">minSpareThreads</span>=<span class="string">"50"</span> <span class="attr">prestartminSpareThreads</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 设置nio2 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Connector</span> <span class="attr">executor</span>=<span class="string">"tomcatThreadPool"</span> <span class="attr">port</span>=<span class="string">"8080"</span> <span class="attr">protocol</span>=<span class="string">"org.apache.coyote.http11.Http11Nio2Protocol"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">connectionTimeout</span>=<span class="string">"20000"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">redirectPort</span>=<span class="string">"8443"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1538747028764.png" alt="1538747028764"></p>
+<p>可以看到，平均响应时间有缩短，吞吐量有提升，可以得出结论：nio2的性能要高于nio。</p>
+<h3 id="1-5、调整JVM参数进行优化"><a href="#1-5、调整JVM参数进行优化" class="headerlink" title="1.5、调整JVM参数进行优化"></a>1.5、调整JVM参数进行优化</h3><p>接下来，测试通过jvm参数进行优化，为了测试一致性，依然将最大线程数设置为500，启用nio2运行模式。</p>
+<h4 id="1-5-1、设置并行垃圾回收器"><a href="#1-5-1、设置并行垃圾回收器" class="headerlink" title="1.5.1、设置并行垃圾回收器"></a>1.5.1、设置并行垃圾回收器</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">年轻代、老年代均使用并行收集器，初始堆内存64M，最大堆内存512M</span></span><br><span class="line">JAVA_OPTS="-XX:+UseParallelGC -XX:+UseParallelOldGC -Xms64m -Xmx512m -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:+PrintHeapAtGC -Xloggc:../logs/gc.log"</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/05/30/JVM优化-Tomcat优化/1538012232502.png" alt="1538012232502"></p>
+<p>测试结果与默认的JVM参数结果接近。（执行了2次测试，结果是第二次测试的结果）</p>
+<h4 id="1-5-2、查看gc日志文件"><a href="#1-5-2、查看gc日志文件" class="headerlink" title="1.5.2、查看gc日志文件"></a>1.5.2、查看gc日志文件</h4><p>将gc.log文件上传到gceasy.io查看gc中是否存在问题。</p>
+<p>问题一： <img src="/2019/05/30/JVM优化-Tomcat优化/1538012634194.png" alt="1538012634194"></p>
+<p>在报告中显示，在5次GC时，系统所消耗的时间大于用户时间，这反应出的服务器的性能存在瓶颈，调度CPU等资源所消耗的时间要长一些。</p>
+<p>问题二： <img src="/2019/05/30/JVM优化-Tomcat优化/1538013060119.png" alt="1538013060119"></p>
+<p>可以关键指标中可以看出，吞吐量表现不错，但是gc时，线程的暂停时间稍有点长。</p>
+<p>问题三： <img src="/2019/05/30/JVM优化-Tomcat优化/1538013925947.png" alt="1538013925947"></p>
+<p>通过GC的统计可以看出：</p>
+<ul>
+<li>年轻代的gc有74次，次数稍有多，说明年轻代设置的大小不合适需要调整</li>
+<li>FullGC有8次，说明堆内存的大小不合适，需要调整</li>
+</ul>
+<p>问题四： <img src="/2019/05/30/JVM优化-Tomcat优化/1538014237594.png" alt="1538014237594"></p>
+<p>从GC原因的可以看出，年轻代大小设置不合理，导致了多次GC。</p>
+<h4 id="1-5-3、调整年轻代大小"><a href="#1-5-3、调整年轻代大小" class="headerlink" title="1.5.3、调整年轻代大小"></a>1.5.3、调整年轻代大小</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">JAVA_OPTS="-XX:+UseParallelGC -XX:+UseParallelOldGC -Xms128m -Xmx1024m -XX:NewSize=64m -XX:MaxNewSize=256m -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:+PrintHeapAtGC -Xloggc:../logs/gc.log"</span><br></pre></td></tr></table></figure>
+<p>将初始堆大小设置为128m，最大为1024m</p>
+<p>初始年轻代大小64m，年轻代最大256m <img src="/2019/05/30/JVM优化-Tomcat优化/1538015127822.png" alt="1538015127822"></p>
+<p>从测试结果来看，吞吐量以及响应时间均有提升。</p>
+<p>查看gc日志：</p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1538015681175.png" alt="1538015681175"></p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1538016117073.png" alt="1538016117073"></p>
+<p>可以看到GC次数要明显减少，说明调整是有效的。</p>
+<h4 id="1-5-4、设置G1垃圾回收器"><a href="#1-5-4、设置G1垃圾回收器" class="headerlink" title="1.5.4、设置G1垃圾回收器"></a>1.5.4、设置G1垃圾回收器</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">设置了最大停顿时间100毫秒，初始堆内存128m，最大堆内存1024m</span></span><br><span class="line">JAVA_OPTS="-XX:+UseG1GC -XX:MaxGCPauseMillis=100 -Xms128m -Xmx1024m -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:+PrintHeapAtGC -Xloggc:../logs/gc.log"</span><br></pre></td></tr></table></figure>
+<p>测试结果：  <img src="/2019/05/30/JVM优化-Tomcat优化/1538019510782.png" alt="1538019510782"></p>
+<p><img src="/2019/05/30/JVM优化-Tomcat优化/1538019458636.png" alt="1538019458636"></p>
+<p>可以看到，吞吐量有所提升，评价响应时间也有所缩短。</p>
+<h4 id="1-5-5、小结"><a href="#1-5-5、小结" class="headerlink" title="1.5.5、小结"></a>1.5.5、小结</h4><p>通过上述的测试，可以总结出，对tomcat性能优化就是需要不断的进行调整参数，然后测试结果，可能会调优也可能会调差，这时就需要借助于gc的可视化工具来看gc的情况。再帮我我们做出决策应该调整哪些参数。</p>
+<h2 id="2、JVM字节码"><a href="#2、JVM字节码" class="headerlink" title="2、JVM字节码"></a>2、JVM字节码</h2><p>前面我们通过tomcat本身的参数以及jvm的参数对tomcat做了优化，其实要想将应用程序跑的更快、效率更高，除了对tomcat容器以及jvm优化外，应用程序代码本身如果写的效率不高的，那么也是不行的，所以，对于程序本身的优化也就很重要了。</p>
+<p>对于程序本身的优化，可以借鉴很多前辈们的经验，但是有些时候，在从源码角度方面分析的话，不好鉴别出哪个效率高，如对字符串拼接的操作，是直接“+”号拼接效率高还是使用StringBuilder效率高？</p>
+<p>这个时候，就需要通过查看编译好的class文件中字节码，就可以找到答案。</p>
+<p>我们都知道，java编写应用，需要先通过javac命令编译成class文件，再通过jvm执行，jvm执行时是需要将class文件中的字节码载入到jvm进行运行的。</p>
+<h3 id="2-1、通过javap命令查看class文件的字节码内容"><a href="#2-1、通过javap命令查看class文件的字节码内容" class="headerlink" title="2.1、通过javap命令查看class文件的字节码内容"></a>2.1、通过javap命令查看class文件的字节码内容</h3><p>首先，看一个简单的Test1类的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.itcast.jvm;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test1</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> a = <span class="number">2</span>;</span><br><span class="line">        <span class="keyword">int</span> b = <span class="number">5</span>;</span><br><span class="line">        <span class="keyword">int</span> c = b - a;</span><br><span class="line">        System.out.println(c);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过javap命令查看class文件中的字节码内容：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">javap -v Test1.class &gt; Test1.txt</span><br><span class="line"></span><br><span class="line">javap用法: javap &lt;options&gt; &lt;classes&gt;</span><br><span class="line">其中, 可能的选项包括:</span><br><span class="line">  -help  --help  -?        输出此用法消息</span><br><span class="line">  -version                 版本信息</span><br><span class="line">  -v  -verbose             输出附加信息</span><br><span class="line">  -l                       输出行号和本地变量表</span><br><span class="line">  -public                  仅显示公共类和成员</span><br><span class="line">  -protected               显示受保护的/公共类和成员</span><br><span class="line">  -package                 显示程序包/受保护的/公共类</span><br><span class="line">                           和成员 (默认)</span><br><span class="line">  -p  -private             显示所有类和成员</span><br><span class="line">  -c                       对代码进行反汇编</span><br><span class="line">  -s                       输出内部类型签名</span><br><span class="line">  -sysinfo                 显示正在处理的类的</span><br><span class="line">                           系统信息 (路径, 大小, 日期, MD5 散列)</span><br><span class="line">  -constants               显示最终常量</span><br><span class="line">  -classpath &lt;path&gt;        指定查找用户类文件的位置</span><br><span class="line">  -cp &lt;path&gt;               指定查找用户类文件的位置</span><br><span class="line">  -bootclasspath &lt;path&gt;    覆盖引导类文件的位置</span><br></pre></td></tr></table></figure>
+<p>查看Test1.txt文件，内容如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line">Classfile /F:/code/bestqiang-jvm/bestqiang-jvm-test/target/classes/cn/bestqiang/jvm/Test1.class</span><br><span class="line">  Last modified <span class="number">2018</span>-<span class="number">9</span>-<span class="number">27</span>; size <span class="number">577</span> bytes</span><br><span class="line">  MD5 checksum <span class="number">4214859</span>db3543c0c783ec8a216a4795f</span><br><span class="line">  Compiled from <span class="string">"Test1.java"</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">cn</span>.<span class="title">bestqiang</span>.<span class="title">jvm</span>.<span class="title">Test1</span></span></span><br><span class="line">  minor version: 0</span><br><span class="line">  major version: <span class="number">52</span></span><br><span class="line">  flags: ACC_PUBLIC, ACC_SUPER</span><br><span class="line">Constant pool:</span><br><span class="line">   #1 = Methodref          #5.#23         // java/lang/Object."&lt;init&gt;":()V</span><br><span class="line">   #2 = Fieldref           #24.#25        // java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line">   #3 = Methodref          #26.#27        // java/io/PrintStream.println:(I)V</span><br><span class="line">   #4 = Class              #28            // cn/bestqiang/jvm/Test1</span><br><span class="line">   #5 = Class              #29            // java/lang/Object</span><br><span class="line">   #6 = Utf8               &lt;init&gt;</span><br><span class="line">   #7 = Utf8               ()V</span><br><span class="line">   #8 = Utf8               Code</span><br><span class="line">   #9 = Utf8               LineNumberTable</span><br><span class="line">  #10 = Utf8               LocalVariableTable</span><br><span class="line">  #11 = Utf8               this</span><br><span class="line">  #12 = Utf8               Lcn/bestqiang/jvm/Test1;</span><br><span class="line">  #13 = Utf8               main</span><br><span class="line">  #14 = Utf8               ([Ljava/lang/String;)V</span><br><span class="line">  #15 = Utf8               args</span><br><span class="line">  #16 = Utf8               [Ljava/lang/String;</span><br><span class="line">  #17 = Utf8               a</span><br><span class="line">  #18 = Utf8               I</span><br><span class="line">  #19 = Utf8               b</span><br><span class="line">  #20 = Utf8               c</span><br><span class="line">  #21 = Utf8               SourceFile</span><br><span class="line">  #22 = Utf8               Test1.java</span><br><span class="line">  #23 = NameAndType        #6:#7          // "&lt;init&gt;":()V</span><br><span class="line">  #24 = Class              #30            // java/lang/System</span><br><span class="line">  #25 = NameAndType        #31:#32        // out:Ljava/io/PrintStream;</span><br><span class="line">  #26 = Class              #33            // java/io/PrintStream</span><br><span class="line">  #27 = NameAndType        #34:#35        // println:(I)V</span><br><span class="line">  #28 = Utf8               cn/bestqiang/jvm/Test1</span><br><span class="line">  #29 = Utf8               java/lang/Object</span><br><span class="line">  #30 = Utf8               java/lang/System</span><br><span class="line">  #31 = Utf8               out</span><br><span class="line">  #32 = Utf8               Ljava/io/PrintStream;</span><br><span class="line">  #33 = Utf8               java/io/PrintStream</span><br><span class="line">  #34 = Utf8               println</span><br><span class="line">  #35 = Utf8               (I)V</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">public</span> cn.bestqiang.jvm.Test1();</span><br><span class="line">    descriptor: ()V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=<span class="number">1</span>, locals=<span class="number">1</span>, args_size=<span class="number">1</span></span><br><span class="line">         <span class="number">0</span>: aload_0</span><br><span class="line">         1: invokespecial #1                  // Method java/lang/Object."&lt;init&gt;":()V</span><br><span class="line">         <span class="number">4</span>: <span class="keyword">return</span></span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line <span class="number">3</span>: <span class="number">0</span></span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            <span class="number">0</span>       <span class="number">5</span>     <span class="number">0</span>  <span class="keyword">this</span>   Lcn/bestqiang/jvm/Test1;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(java.lang.String[])</span></span>;</span><br><span class="line">    descriptor: ([Ljava/lang/String;)V</span><br><span class="line">    flags: ACC_PUBLIC, ACC_STATIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=<span class="number">2</span>, locals=<span class="number">4</span>, args_size=<span class="number">1</span></span><br><span class="line">         <span class="number">0</span>: iconst_2</span><br><span class="line">         <span class="number">1</span>: istore_1</span><br><span class="line">         <span class="number">2</span>: iconst_5</span><br><span class="line">         <span class="number">3</span>: istore_2</span><br><span class="line">         <span class="number">4</span>: iload_2</span><br><span class="line">         <span class="number">5</span>: iload_1</span><br><span class="line">         <span class="number">6</span>: isub</span><br><span class="line">         <span class="number">7</span>: istore_3</span><br><span class="line">         8: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line">        <span class="number">11</span>: iload_3</span><br><span class="line">        12: invokevirtual #3                  // Method java/io/PrintStream.println:(I)V</span><br><span class="line">        <span class="number">15</span>: <span class="keyword">return</span></span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line <span class="number">6</span>: <span class="number">0</span></span><br><span class="line">        line <span class="number">7</span>: <span class="number">2</span></span><br><span class="line">        line <span class="number">8</span>: <span class="number">4</span></span><br><span class="line">        line <span class="number">9</span>: <span class="number">8</span></span><br><span class="line">        line <span class="number">10</span>: <span class="number">15</span></span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            <span class="number">0</span>      <span class="number">16</span>     <span class="number">0</span>  args   [Ljava/lang/String;</span><br><span class="line">            <span class="number">2</span>      <span class="number">14</span>     <span class="number">1</span>     a   I</span><br><span class="line">            <span class="number">4</span>      <span class="number">12</span>     <span class="number">2</span>     b   I</span><br><span class="line">            <span class="number">8</span>       <span class="number">8</span>     <span class="number">3</span>     c   I</span><br><span class="line">&#125;</span><br><span class="line">SourceFile: <span class="string">"Test1.java"</span></span><br></pre></td></tr></table></figure>
+<p>内容大致分为4个部分：</p>
+<p>第一部分：显示了生成这个class的java源文件、版本信息、生成时间等。</p>
+<p>第二部分：显示了该类中所涉及到常量池，共35个常量。</p>
+<p>第三部分：显示该类的构造器，编译器自动插入的。</p>
+<p>第四部分：显示了main方的信息。（这个是需要我们重点关注的）</p>
+<h3 id="2-2、常量池"><a href="#2-2、常量池" class="headerlink" title="2.2、常量池"></a>2.2、常量池</h3><p>官网文档：</p>
+<p><a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4-140" target="_blank" rel="noopener">https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4-140</a></p>
+<table>
+<thead>
+<tr>
+<th>Constant Type</th>
+<th>Value</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CONSTANT_Class</code></td>
+<td>7</td>
+<td>类或接口的符号引用</td>
+</tr>
+<tr>
+<td><code>CONSTANT_Fieldref</code></td>
+<td>9</td>
+<td>字段的符号引用</td>
+</tr>
+<tr>
+<td><code>CONSTANT_Methodref</code></td>
+<td>10</td>
+<td>类中方法的符号引用</td>
+</tr>
+<tr>
+<td><code>CONSTANT_InterfaceMethodref</code></td>
+<td>11</td>
+<td>接口中方法的符号引用</td>
+</tr>
+<tr>
+<td><code>CONSTANT_String</code></td>
+<td>8</td>
+<td>字符串类型常量</td>
+</tr>
+<tr>
+<td><code>CONSTANT_Integer</code></td>
+<td>3</td>
+<td>整形常量</td>
+</tr>
+<tr>
+<td><code>CONSTANT_Float</code></td>
+<td>4</td>
+<td>浮点型常量</td>
+</tr>
+<tr>
+<td><code>CONSTANT_Long</code></td>
+<td>5</td>
+<td>长整型常量</td>
+</tr>
+<tr>
+<td><code>CONSTANT_Double</code></td>
+<td>6</td>
+<td>双精度浮点型常量</td>
+</tr>
+<tr>
+<td><code>CONSTANT_NameAndType</code></td>
+<td>12</td>
+<td>字段或方法的符号引用</td>
+</tr>
+<tr>
+<td><code>CONSTANT_Utf8</code></td>
+<td>1</td>
+<td>UTF-8编码的字符串</td>
+</tr>
+<tr>
+<td><code>CONSTANT_MethodHandle</code></td>
+<td>15</td>
+<td>表示方法句柄</td>
+</tr>
+<tr>
+<td><code>CONSTANT_MethodType</code></td>
+<td>16</td>
+<td>标志方法类型</td>
+</tr>
+<tr>
+<td><code>CONSTANT_InvokeDynamic</code></td>
+<td>18</td>
+<td>表示一个动态方法调用点</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-3、描述符"><a href="#2-3、描述符" class="headerlink" title="2.3、描述符"></a>2.3、描述符</h3><h4 id="2-3-1、字段描述符"><a href="#2-3-1、字段描述符" class="headerlink" title="2.3.1、字段描述符"></a>2.3.1、字段描述符</h4><p>官网：<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.3.2" target="_blank" rel="noopener">https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.3.2</a></p>
+<table>
+<thead>
+<tr>
+<th><em>FieldType</em> term</th>
+<th>Type</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>B</code></td>
+<td><code>byte</code></td>
+<td>signed byte</td>
+</tr>
+<tr>
+<td><code>C</code></td>
+<td><code>char</code></td>
+<td>Unicode character code point in the Basic Multilingual Plane, encoded with UTF-16</td>
+</tr>
+<tr>
+<td><code>D</code></td>
+<td><code>double</code></td>
+<td>double-precision floating-point value</td>
+</tr>
+<tr>
+<td><code>F</code></td>
+<td><code>float</code></td>
+<td>single-precision floating-point value</td>
+</tr>
+<tr>
+<td><code>I</code></td>
+<td><code>int</code></td>
+<td>integer</td>
+</tr>
+<tr>
+<td><code>J</code></td>
+<td><code>long</code></td>
+<td>long integer</td>
+</tr>
+<tr>
+<td><code>LClassName;</code></td>
+<td><code>reference</code></td>
+<td>an instance of class <em>ClassName</em></td>
+</tr>
+<tr>
+<td><code>S</code></td>
+<td><code>short</code></td>
+<td>signed short</td>
+</tr>
+<tr>
+<td><code>Z</code></td>
+<td><code>boolean</code></td>
+<td><code>true</code> or <code>false</code></td>
+</tr>
+<tr>
+<td><code>[</code></td>
+<td><code>reference</code></td>
+<td>one array dimension</td>
+</tr>
+</tbody>
+</table>
+<h4 id="2-3-2、方法描述符"><a href="#2-3-2、方法描述符" class="headerlink" title="2.3.2、方法描述符"></a>2.3.2、方法描述符</h4><p>官网：<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.3.3" target="_blank" rel="noopener">https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.3.3</a></p>
+<p>示例：</p>
+<p>The method descriptor for the method:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Object <span class="title">m</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">double</span> d, Thread t)</span> </span>&#123;...&#125;</span><br></pre></td></tr></table></figure>
+<p>is:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(IDLjava/lang/Thread;)Ljava/lang/Object;</span><br></pre></td></tr></table></figure>
+<h3 id="2-4、解读方法字节码"><a href="#2-4、解读方法字节码" class="headerlink" title="2.4、解读方法字节码"></a>2.4、解读方法字节码</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(java.lang.String[])</span></span>;</span><br><span class="line">    descriptor: ([Ljava/lang/String;)V  <span class="comment">//方法描述，V表示该方法的放回值为void</span></span><br><span class="line">    flags: ACC_PUBLIC, ACC_STATIC  <span class="comment">// 方法修饰符，public、static的</span></span><br><span class="line">    Code:</span><br><span class="line">      <span class="comment">// stack=2,操作栈的大小为2、locals=4，本地变量表大小，args_size=1, 参数的个数</span></span><br><span class="line">      stack=<span class="number">2</span>, locals=<span class="number">4</span>, args_size=<span class="number">1</span> </span><br><span class="line">         <span class="number">0</span>: iconst_2  <span class="comment">//将数字2值压入操作栈，位于栈的最上面</span></span><br><span class="line">         <span class="number">1</span>: istore_1  <span class="comment">//从操作栈中弹出一个元素(数字2)，放入到本地变量表中，位于下标为1的位置（下标为0的是this）</span></span><br><span class="line">         <span class="number">2</span>: iconst_5  <span class="comment">//将数字5值压入操作栈，位于栈的最上面</span></span><br><span class="line">         <span class="number">3</span>: istore_2  <span class="comment">//从操作栈中弹出一个元素(5)，放入到本地变量表中，位于第下标为2个位置</span></span><br><span class="line">         <span class="number">4</span>: iload_2  <span class="comment">//将本地变量表中下标为2的位置元素压入操作栈（5）</span></span><br><span class="line">         <span class="number">5</span>: iload_1  <span class="comment">//将本地变量表中下标为1的位置元素压入操作栈（2）</span></span><br><span class="line">         <span class="number">6</span>: isub  <span class="comment">//操作栈中的2个数字相减</span></span><br><span class="line">         <span class="number">7</span>: istore_3 <span class="comment">// 将相减的结果压入到本地本地变量表中，位于下标为3的位置</span></span><br><span class="line">         <span class="comment">// 通过#2号找到对应的常量，即可找到对应的引用       </span></span><br><span class="line">         8: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line">        <span class="number">11</span>: iload_3 <span class="comment">//将本地变量表中下标为3的位置元素压入操作栈（3）</span></span><br><span class="line">        <span class="comment">// 通过#3号找到对应的常量，即可找到对应的引用，进行方法调用</span></span><br><span class="line">        12: invokevirtual #3                  // Method java/io/PrintStream.println:(I)V</span><br><span class="line">        <span class="number">15</span>: <span class="keyword">return</span> <span class="comment">//返回</span></span><br><span class="line">      LineNumberTable:  <span class="comment">//行号的列表</span></span><br><span class="line">        line <span class="number">6</span>: <span class="number">0</span></span><br><span class="line">        line <span class="number">7</span>: <span class="number">2</span></span><br><span class="line">        line <span class="number">8</span>: <span class="number">4</span></span><br><span class="line">        line <span class="number">9</span>: <span class="number">8</span></span><br><span class="line">        line <span class="number">10</span>: <span class="number">15</span></span><br><span class="line">      LocalVariableTable: <span class="comment">// 本地变量表</span></span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            <span class="number">0</span>      <span class="number">16</span>     <span class="number">0</span>  args   [Ljava/lang/String;</span><br><span class="line">            <span class="number">2</span>      <span class="number">14</span>     <span class="number">1</span>     a   I</span><br><span class="line">            <span class="number">4</span>      <span class="number">12</span>     <span class="number">2</span>     b   I</span><br><span class="line">            <span class="number">8</span>       <span class="number">8</span>     <span class="number">3</span>     c   I</span><br><span class="line">&#125;</span><br><span class="line">SourceFile: <span class="string">"Test1.java"</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-4-1、图解"><a href="#2-4-1、图解" class="headerlink" title="2.4.1、图解"></a>2.4.1、图解</h4><p> <img src="/2019/05/30/JVM优化-Tomcat优化/1538065414765.png" alt="1538065414765"></p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1538065819308.png" alt="1538065819308"></p>
+<p> <img src="/2019/05/30/JVM优化-Tomcat优化/1538066431935.png" alt="1538066431935"></p>
+<h3 id="2-5、研究-i-与-i-的不同"><a href="#2-5、研究-i-与-i-的不同" class="headerlink" title="2.5、研究 i++ 与 ++i 的不同"></a>2.5、研究 i++ 与 ++i 的不同</h3><p>我们都知道，i++表示，先返回再+1，++i表示，先+1再返回。它的底层是怎么样的呢? 我们一起探究下。</p>
+<p>编写测试代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test2</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> Test2().method1();</span><br><span class="line">        <span class="keyword">new</span> Test2().method2();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method1</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">int</span> a = i++;</span><br><span class="line">        System.out.println(a); <span class="comment">//打印1</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method2</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">int</span> a = ++i;</span><br><span class="line">        System.out.println(a);<span class="comment">//打印2</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-5-1、查看class字节码"><a href="#2-5-1、查看class字节码" class="headerlink" title="2.5.1、查看class字节码"></a>2.5.1、查看class字节码</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br></pre></td><td class="code"><pre><span class="line">Classfile /F:/code/bestqiang-jvm/bestqiang-jvm-test/target/classes/cn/bestqiang/jvm/Test2.class</span><br><span class="line">  MD5 checksum <span class="number">901660f</span>c11c43b6daadd0942150960ed</span><br><span class="line">  Compiled from <span class="string">"Test2.java"</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">cn</span>.<span class="title">bestqiang</span>.<span class="title">jvm</span>.<span class="title">Test2</span></span></span><br><span class="line">  minor version: 0</span><br><span class="line">  major version: <span class="number">52</span></span><br><span class="line">  flags: ACC_PUBLIC, ACC_SUPER</span><br><span class="line">Constant pool:</span><br><span class="line">   #1 = Methodref          #8.#27         // java/lang/Object."&lt;init&gt;":()V</span><br><span class="line">   #2 = Class              #28            // cn/bestqiang/jvm/Test2</span><br><span class="line">   #3 = Methodref          #2.#27         // cn/bestqiang/jvm/Test2."&lt;init&gt;":()V</span><br><span class="line">   #4 = Methodref          #2.#29         // cn/bestqiang/jvm/Test2.method1:()V</span><br><span class="line">   #5 = Methodref          #2.#30         // cn/bestqiang/jvm/Test2.method2:()V</span><br><span class="line">   #6 = Fieldref           #31.#32        // java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line">   #7 = Methodref          #33.#34        // java/io/PrintStream.println:(I)V</span><br><span class="line">   #8 = Class              #35            // java/lang/Object</span><br><span class="line">   #9 = Utf8               &lt;init&gt;</span><br><span class="line">  #10 = Utf8               ()V</span><br><span class="line">  #11 = Utf8               Code</span><br><span class="line">  #12 = Utf8               LineNumberTable</span><br><span class="line">  #13 = Utf8               LocalVariableTable</span><br><span class="line">  #14 = Utf8               this</span><br><span class="line">  #15 = Utf8               Lcn/bestqiang/jvm/Test2;</span><br><span class="line">  #16 = Utf8               main</span><br><span class="line">  #17 = Utf8               ([Ljava/lang/String;)V</span><br><span class="line">  #18 = Utf8               args</span><br><span class="line">  #19 = Utf8               [Ljava/lang/String;</span><br><span class="line">  #20 = Utf8               method1</span><br><span class="line">  #21 = Utf8               i</span><br><span class="line">  #22 = Utf8               I</span><br><span class="line">  #23 = Utf8               a</span><br><span class="line">  #24 = Utf8               method2</span><br><span class="line">  #25 = Utf8               SourceFile</span><br><span class="line">  #26 = Utf8               Test2.java</span><br><span class="line">  #27 = NameAndType        #9:#10         // "&lt;init&gt;":()V</span><br><span class="line">  #28 = Utf8               cn/bestqiang/jvm/Test2</span><br><span class="line">  #29 = NameAndType        #20:#10        // method1:()V</span><br><span class="line">  #30 = NameAndType        #24:#10        // method2:()V</span><br><span class="line">  #31 = Class              #36            // java/lang/System</span><br><span class="line">  #32 = NameAndType        #37:#38        // out:Ljava/io/PrintStream;</span><br><span class="line">  #33 = Class              #39            // java/io/PrintStream</span><br><span class="line">  #34 = NameAndType        #40:#41        // println:(I)V</span><br><span class="line">  #35 = Utf8               java/lang/Object</span><br><span class="line">  #36 = Utf8               java/lang/System</span><br><span class="line">  #37 = Utf8               out</span><br><span class="line">  #38 = Utf8               Ljava/io/PrintStream;</span><br><span class="line">  #39 = Utf8               java/io/PrintStream</span><br><span class="line">  #40 = Utf8               println</span><br><span class="line">  #41 = Utf8               (I)V</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">public</span> cn.bestqiang.jvm.Test2();</span><br><span class="line">    descriptor: ()V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=<span class="number">1</span>, locals=<span class="number">1</span>, args_size=<span class="number">1</span></span><br><span class="line">         <span class="number">0</span>: aload_0</span><br><span class="line">         1: invokespecial #1                  // Method java/lang/Object."&lt;init&gt;":()V</span><br><span class="line">         <span class="number">4</span>: <span class="keyword">return</span></span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line <span class="number">3</span>: <span class="number">0</span></span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            <span class="number">0</span>       <span class="number">5</span>     <span class="number">0</span>  <span class="keyword">this</span>   Lcn/bestqiang/jvm/Test2;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(java.lang.String[])</span></span>;</span><br><span class="line">    descriptor: ([Ljava/lang/String;)V</span><br><span class="line">    flags: ACC_PUBLIC, ACC_STATIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=<span class="number">2</span>, locals=<span class="number">1</span>, args_size=<span class="number">1</span></span><br><span class="line">         0: new           #2                  // class cn/bestqiang/jvm/Test2</span><br><span class="line">         <span class="number">3</span>: dup</span><br><span class="line">         4: invokespecial #3                  // Method "&lt;init&gt;":()V</span><br><span class="line">         7: invokevirtual #4                  // Method method1:()V</span><br><span class="line">        10: new           #2                  // class cn/bestqiang/jvm/Test2</span><br><span class="line">        <span class="number">13</span>: dup</span><br><span class="line">        14: invokespecial #3                  // Method "&lt;init&gt;":()V</span><br><span class="line">        17: invokevirtual #5                  // Method method2:()V</span><br><span class="line">        <span class="number">20</span>: <span class="keyword">return</span></span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line <span class="number">6</span>: <span class="number">0</span></span><br><span class="line">        line <span class="number">7</span>: <span class="number">10</span></span><br><span class="line">        line <span class="number">8</span>: <span class="number">20</span></span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            <span class="number">0</span>      <span class="number">21</span>     <span class="number">0</span>  args   [Ljava/lang/String;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method1</span><span class="params">()</span></span>;</span><br><span class="line">    descriptor: ()V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=<span class="number">2</span>, locals=<span class="number">3</span>, args_size=<span class="number">1</span></span><br><span class="line">         <span class="number">0</span>: iconst_1</span><br><span class="line">         <span class="number">1</span>: istore_1</span><br><span class="line">         <span class="number">2</span>: iload_1</span><br><span class="line">         <span class="number">3</span>: iinc          <span class="number">1</span>, <span class="number">1</span></span><br><span class="line">         <span class="number">6</span>: istore_2</span><br><span class="line">         7: getstatic     #6                  // Field java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line">        <span class="number">10</span>: iload_2</span><br><span class="line">        11: invokevirtual #7                  // Method java/io/PrintStream.println:(I)V</span><br><span class="line">        <span class="number">14</span>: <span class="keyword">return</span></span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line <span class="number">11</span>: <span class="number">0</span></span><br><span class="line">        line <span class="number">12</span>: <span class="number">2</span></span><br><span class="line">        line <span class="number">13</span>: <span class="number">7</span></span><br><span class="line">        line <span class="number">14</span>: <span class="number">14</span></span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            <span class="number">0</span>      <span class="number">15</span>     <span class="number">0</span>  <span class="keyword">this</span>   Lcn/bestqiang/jvm/Test2;</span><br><span class="line">            <span class="number">2</span>      <span class="number">13</span>     <span class="number">1</span>     i   I</span><br><span class="line">            <span class="number">7</span>       <span class="number">8</span>     <span class="number">2</span>     a   I</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method2</span><span class="params">()</span></span>;</span><br><span class="line">    descriptor: ()V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=<span class="number">2</span>, locals=<span class="number">3</span>, args_size=<span class="number">1</span></span><br><span class="line">         <span class="number">0</span>: iconst_1</span><br><span class="line">         <span class="number">1</span>: istore_1</span><br><span class="line">         <span class="number">2</span>: iinc          <span class="number">1</span>, <span class="number">1</span></span><br><span class="line">         <span class="number">5</span>: iload_1</span><br><span class="line">         <span class="number">6</span>: istore_2</span><br><span class="line">         7: getstatic     #6                  // Field java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line">        <span class="number">10</span>: iload_2</span><br><span class="line">        11: invokevirtual #7                  // Method java/io/PrintStream.println:(I)V</span><br><span class="line">        <span class="number">14</span>: <span class="keyword">return</span></span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line <span class="number">17</span>: <span class="number">0</span></span><br><span class="line">        line <span class="number">18</span>: <span class="number">2</span></span><br><span class="line">        line <span class="number">19</span>: <span class="number">7</span></span><br><span class="line">        line <span class="number">20</span>: <span class="number">14</span></span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            <span class="number">0</span>      <span class="number">15</span>     <span class="number">0</span>  <span class="keyword">this</span>   Lcn/bestqiang/jvm/Test2;</span><br><span class="line">            <span class="number">2</span>      <span class="number">13</span>     <span class="number">1</span>     i   I</span><br><span class="line">            <span class="number">7</span>       <span class="number">8</span>     <span class="number">2</span>     a   I</span><br><span class="line">&#125;</span><br><span class="line">SourceFile: <span class="string">"Test2.java"</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-5-2、对比"><a href="#2-5-2、对比" class="headerlink" title="2.5.2、对比"></a>2.5.2、对比</h4><p>i++：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">0</span>: iconst_1  <span class="comment">//将数字1压入到操作栈</span></span><br><span class="line"> <span class="number">1</span>: istore_1  <span class="comment">//将数字1从操作栈弹出，压入到本地变量表中，下标为1</span></span><br><span class="line"> <span class="number">2</span>: iload_1   <span class="comment">//从本地变量表中获取下标为1的数据，压入到操作栈中</span></span><br><span class="line"> <span class="number">3</span>: iinc          <span class="number">1</span>, <span class="number">1</span> <span class="comment">// 将本地变量中的1，再+1</span></span><br><span class="line"> <span class="number">6</span>: istore_2  <span class="comment">// 将数字1从操作栈弹出，压入到本地变量表中，下标为2</span></span><br><span class="line"> 7: getstatic     #6                  // Field java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line"><span class="number">10</span>: iload_2   <span class="comment">//从本地变量表中获取下标为2的数据，压入到操作栈中</span></span><br><span class="line">11: invokevirtual #7                  // Method java/io/PrintStream.println:(I)V</span><br><span class="line"><span class="number">14</span>: <span class="keyword">return</span></span><br></pre></td></tr></table></figure>
+<p>++i：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">0</span>: iconst_1  <span class="comment">//将数字1压入到操作栈</span></span><br><span class="line"> <span class="number">1</span>: istore_1  <span class="comment">//将数字1从操作栈弹出，压入到本地变量表中，下标为1</span></span><br><span class="line"> <span class="number">2</span>: iinc          <span class="number">1</span>, <span class="number">1</span><span class="comment">// 将本地变量中的1，再+1</span></span><br><span class="line"> <span class="number">5</span>: iload_1  <span class="comment">//从本地变量表中获取下标为1的数据（2），压入到操作栈中</span></span><br><span class="line"> <span class="number">6</span>: istore_2 <span class="comment">//将数字2从操作栈弹出，压入到本地变量表中，下标为2</span></span><br><span class="line"> 7: getstatic     #6                  // Field java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line"><span class="number">10</span>: iload_2 <span class="comment">//从本地变量表中获取下标为2的数据（2），压入到操作栈中</span></span><br><span class="line">11: invokevirtual #7                  // Method java/io/PrintStream.println:(I)V</span><br><span class="line"><span class="number">14</span>: <span class="keyword">return</span></span><br></pre></td></tr></table></figure>
+<p>区别：</p>
+<ul>
+<li>i++<ul>
+<li>只是在本地变量中对数字做了相加，并没有将数据压入到操作栈</li>
+<li>将前面拿到的数字1，再次从操作栈中拿到，压入到本地变量中</li>
+</ul>
+</li>
+<li>++i<ul>
+<li>将本地变量中的数字做了相加，并且将数据压入到操作栈</li>
+<li>将操作栈中的数据，再次压入到本地变量中</li>
+</ul>
+</li>
+</ul>
+<p>小结：可以通过查看字节码的方式对代码的底层做研究，探究其原理。</p>
+<h3 id="2-6、字符串拼接"><a href="#2-6、字符串拼接" class="headerlink" title="2.6、字符串拼接"></a>2.6、字符串拼接</h3><p>字符串的拼接在开发过程中使用是非常频繁的，常用的方式有三种：</p>
+<ul>
+<li>+号拼接： str+”456”</li>
+<li>StringBuilder拼接</li>
+<li>StringBuffer拼接</li>
+</ul>
+<p>StringBuffer是保证线程安全的，效率是比较低的，我们更多的是使用场景是不会涉及到线程安全的问题的，所以更多的时候会选择StringBuilder，效率会高一些。</p>
+<p>那么，问题来了，StringBuilder和“+”号拼接，哪个效率高呢？接下来我们通过字节码的方式进行探究。</p>
+<p>首先，编写个示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.bestqiang.jvm;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test3</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> Test3().m1();</span><br><span class="line">        <span class="keyword">new</span> Test3().m2();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">m1</span><span class="params">()</span></span>&#123;</span><br><span class="line">        String s1 = <span class="string">"123"</span>;</span><br><span class="line">        String s2 = <span class="string">"456"</span>;</span><br><span class="line">        String s3 = s1 + s2;</span><br><span class="line">        System.out.println(s3);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">m2</span><span class="params">()</span></span>&#123;</span><br><span class="line">        String s1 = <span class="string">"123"</span>;</span><br><span class="line">        String s2 = <span class="string">"456"</span>;</span><br><span class="line">        StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">        sb.append(s1);</span><br><span class="line">        sb.append(s2);</span><br><span class="line">        String s3 = sb.toString();</span><br><span class="line">        System.out.println(s3);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>查看Test3.class的字节码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br></pre></td><td class="code"><pre><span class="line">Classfile /F:/code/bestqiang-jvm/bestqiang-jvm-test/target/classes/cn/bestqiang/jvm/Test3.class</span><br><span class="line">  MD5 checksum b3f7629e7e37768b9b5581be01df40d6</span><br><span class="line">  Compiled from <span class="string">"Test3.java"</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">cn</span>.<span class="title">bestqiang</span>.<span class="title">jvm</span>.<span class="title">Test3</span></span></span><br><span class="line">  minor version: 0</span><br><span class="line">  major version: <span class="number">52</span></span><br><span class="line">  flags: ACC_PUBLIC, ACC_SUPER</span><br><span class="line">Constant pool:</span><br><span class="line">   #1 = Methodref          #14.#36        // java/lang/Object."&lt;init&gt;":()V</span><br><span class="line">   #2 = Class              #37            // cn/bestqiang/jvm/Test3</span><br><span class="line">   #3 = Methodref          #2.#36         // cn/bestqiang/jvm/Test3."&lt;init&gt;":()V</span><br><span class="line">   #4 = Methodref          #2.#38         // cn/bestqiang/jvm/Test3.m1:()V</span><br><span class="line">   #5 = Methodref          #2.#39         // cn/bestqiang/jvm/Test3.m2:()V</span><br><span class="line">   #6 = String             #40            // 123</span><br><span class="line">   #7 = String             #41            // 456</span><br><span class="line">   #8 = Class              #42            // java/lang/StringBuilder</span><br><span class="line">   #9 = Methodref          #8.#36         // java/lang/StringBuilder."&lt;init&gt;":()V</span><br><span class="line">  #10 = Methodref          #8.#43         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span><br><span class="line">  #11 = Methodref          #8.#44         // java/lang/StringBuilder.toString:()Ljava/lang/String;</span><br><span class="line">  #12 = Fieldref           #45.#46        // java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line">  #13 = Methodref          #47.#48        // java/io/PrintStream.println:(Ljava/lang/String;)V</span><br><span class="line">  #14 = Class              #49            // java/lang/Object</span><br><span class="line">  #15 = Utf8               &lt;init&gt;</span><br><span class="line">  #16 = Utf8               ()V</span><br><span class="line">  #17 = Utf8               Code</span><br><span class="line">  #18 = Utf8               LineNumberTable</span><br><span class="line">  #19 = Utf8               LocalVariableTable</span><br><span class="line">  #20 = Utf8               this</span><br><span class="line">  #21 = Utf8               Lcn/bestqiang/jvm/Test3;</span><br><span class="line">  #22 = Utf8               main</span><br><span class="line">  #23 = Utf8               ([Ljava/lang/String;)V</span><br><span class="line">  #24 = Utf8               args</span><br><span class="line">  #25 = Utf8               [Ljava/lang/String;</span><br><span class="line">  #26 = Utf8               m1</span><br><span class="line">  #27 = Utf8               s1</span><br><span class="line">  #28 = Utf8               Ljava/lang/String;</span><br><span class="line">  #29 = Utf8               s2</span><br><span class="line">  #30 = Utf8               s3</span><br><span class="line">  #31 = Utf8               m2</span><br><span class="line">  #32 = Utf8               sb</span><br><span class="line">  #33 = Utf8               Ljava/lang/StringBuilder;</span><br><span class="line">  #34 = Utf8               SourceFile</span><br><span class="line">  #35 = Utf8               Test3.java</span><br><span class="line">  #36 = NameAndType        #15:#16        // "&lt;init&gt;":()V</span><br><span class="line">  #37 = Utf8               cn/bestqiang/jvm/Test3</span><br><span class="line">  #38 = NameAndType        #26:#16        // m1:()V</span><br><span class="line">  #39 = NameAndType        #31:#16        // m2:()V</span><br><span class="line">  #40 = Utf8               123</span><br><span class="line">  #41 = Utf8               456</span><br><span class="line">  #42 = Utf8               java/lang/StringBuilder</span><br><span class="line">  #43 = NameAndType        #50:#51        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span><br><span class="line">  #44 = NameAndType        #52:#53        // toString:()Ljava/lang/String;</span><br><span class="line">  #45 = Class              #54            // java/lang/System</span><br><span class="line">  #46 = NameAndType        #55:#56        // out:Ljava/io/PrintStream;</span><br><span class="line">  #47 = Class              #57            // java/io/PrintStream</span><br><span class="line">  #48 = NameAndType        #58:#59        // println:(Ljava/lang/String;)V</span><br><span class="line">  #49 = Utf8               java/lang/Object</span><br><span class="line">  #50 = Utf8               append</span><br><span class="line">  #51 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;</span><br><span class="line">  #52 = Utf8               toString</span><br><span class="line">  #53 = Utf8               ()Ljava/lang/String;</span><br><span class="line">  #54 = Utf8               java/lang/System</span><br><span class="line">  #55 = Utf8               out</span><br><span class="line">  #56 = Utf8               Ljava/io/PrintStream;</span><br><span class="line">  #57 = Utf8               java/io/PrintStream</span><br><span class="line">  #58 = Utf8               println</span><br><span class="line">  #59 = Utf8               (Ljava/lang/String;)V</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">public</span> cn.bestqiang.jvm.Test3();</span><br><span class="line">    descriptor: ()V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=<span class="number">1</span>, locals=<span class="number">1</span>, args_size=<span class="number">1</span></span><br><span class="line">         <span class="number">0</span>: aload_0</span><br><span class="line">         1: invokespecial #1                  // Method java/lang/Object."&lt;init&gt;":()V</span><br><span class="line">         <span class="number">4</span>: <span class="keyword">return</span></span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line <span class="number">3</span>: <span class="number">0</span></span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            <span class="number">0</span>       <span class="number">5</span>     <span class="number">0</span>  <span class="keyword">this</span>   Lcn/bestqiang/jvm/Test3;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(java.lang.String[])</span></span>;</span><br><span class="line">    descriptor: ([Ljava/lang/String;)V</span><br><span class="line">    flags: ACC_PUBLIC, ACC_STATIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=<span class="number">2</span>, locals=<span class="number">1</span>, args_size=<span class="number">1</span></span><br><span class="line">         0: new           #2                  // class cn/bestqiang/jvm/Test3</span><br><span class="line">         <span class="number">3</span>: dup</span><br><span class="line">         4: invokespecial #3                  // Method "&lt;init&gt;":()V</span><br><span class="line">         7: invokevirtual #4                  // Method m1:()V</span><br><span class="line">        10: new           #2                  // class cn/bestqiang/jvm/Test3</span><br><span class="line">        <span class="number">13</span>: dup</span><br><span class="line">        14: invokespecial #3                  // Method "&lt;init&gt;":()V</span><br><span class="line">        17: invokevirtual #5                  // Method m2:()V</span><br><span class="line">        <span class="number">20</span>: <span class="keyword">return</span></span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line <span class="number">6</span>: <span class="number">0</span></span><br><span class="line">        line <span class="number">7</span>: <span class="number">10</span></span><br><span class="line">        line <span class="number">8</span>: <span class="number">20</span></span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            <span class="number">0</span>      <span class="number">21</span>     <span class="number">0</span>  args   [Ljava/lang/String;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">m1</span><span class="params">()</span></span>;</span><br><span class="line">    descriptor: ()V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=<span class="number">2</span>, locals=<span class="number">4</span>, args_size=<span class="number">1</span></span><br><span class="line">         0: ldc           #6                  // String 123</span><br><span class="line">         <span class="number">2</span>: astore_1</span><br><span class="line">         3: ldc           #7                  // String 456</span><br><span class="line">         <span class="number">5</span>: astore_2</span><br><span class="line">         6: new           #8                  // class java/lang/StringBuilder</span><br><span class="line">         <span class="number">9</span>: dup</span><br><span class="line">        10: invokespecial #9                  // Method java/lang/StringBuilder."&lt;init&gt;":()V</span><br><span class="line">        <span class="number">13</span>: aload_1</span><br><span class="line">        14: invokevirtual #10                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span><br><span class="line">        <span class="number">17</span>: aload_2</span><br><span class="line">        18: invokevirtual #10                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span><br><span class="line">        21: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;</span><br><span class="line">        <span class="number">24</span>: astore_3</span><br><span class="line">        25: getstatic     #12                 // Field java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line">        <span class="number">28</span>: aload_3</span><br><span class="line">        29: invokevirtual #13                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V</span><br><span class="line">        <span class="number">32</span>: <span class="keyword">return</span></span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line <span class="number">11</span>: <span class="number">0</span></span><br><span class="line">        line <span class="number">12</span>: <span class="number">3</span></span><br><span class="line">        line <span class="number">13</span>: <span class="number">6</span></span><br><span class="line">        line <span class="number">14</span>: <span class="number">25</span></span><br><span class="line">        line <span class="number">15</span>: <span class="number">32</span></span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            <span class="number">0</span>      <span class="number">33</span>     <span class="number">0</span>  <span class="keyword">this</span>   Lcn/bestqiang/jvm/Test3;</span><br><span class="line">            <span class="number">3</span>      <span class="number">30</span>     <span class="number">1</span>    s1   Ljava/lang/String;</span><br><span class="line">            <span class="number">6</span>      <span class="number">27</span>     <span class="number">2</span>    s2   Ljava/lang/String;</span><br><span class="line">           <span class="number">25</span>       <span class="number">8</span>     <span class="number">3</span>    s3   Ljava/lang/String;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">m2</span><span class="params">()</span></span>;</span><br><span class="line">    descriptor: ()V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=<span class="number">2</span>, locals=<span class="number">5</span>, args_size=<span class="number">1</span></span><br><span class="line">         0: ldc           #6                  // String 123</span><br><span class="line">         <span class="number">2</span>: astore_1</span><br><span class="line">         3: ldc           #7                  // String 456</span><br><span class="line">         <span class="number">5</span>: astore_2</span><br><span class="line">         6: new           #8                  // class java/lang/StringBuilder</span><br><span class="line">         <span class="number">9</span>: dup</span><br><span class="line">        10: invokespecial #9                  // Method java/lang/StringBuilder."&lt;init&gt;":()V</span><br><span class="line">        <span class="number">13</span>: astore_3</span><br><span class="line">        <span class="number">14</span>: aload_3</span><br><span class="line">        <span class="number">15</span>: aload_1</span><br><span class="line">        16: invokevirtual #10                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span><br><span class="line">        <span class="number">19</span>: pop</span><br><span class="line">        <span class="number">20</span>: aload_3</span><br><span class="line">        <span class="number">21</span>: aload_2</span><br><span class="line">        22: invokevirtual #10                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span><br><span class="line">        <span class="number">25</span>: pop</span><br><span class="line">        <span class="number">26</span>: aload_3</span><br><span class="line">        27: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;</span><br><span class="line">        <span class="number">30</span>: astore        <span class="number">4</span></span><br><span class="line">        32: getstatic     #12                 // Field java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line">        <span class="number">35</span>: aload         <span class="number">4</span></span><br><span class="line">        37: invokevirtual #13                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V</span><br><span class="line">        <span class="number">40</span>: <span class="keyword">return</span></span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line <span class="number">18</span>: <span class="number">0</span></span><br><span class="line">        line <span class="number">19</span>: <span class="number">3</span></span><br><span class="line">        line <span class="number">20</span>: <span class="number">6</span></span><br><span class="line">        line <span class="number">21</span>: <span class="number">14</span></span><br><span class="line">        line <span class="number">22</span>: <span class="number">20</span></span><br><span class="line">        line <span class="number">23</span>: <span class="number">26</span></span><br><span class="line">        line <span class="number">24</span>: <span class="number">32</span></span><br><span class="line">        line <span class="number">25</span>: <span class="number">40</span></span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            <span class="number">0</span>      <span class="number">41</span>     <span class="number">0</span>  <span class="keyword">this</span>   Lcn/bestqiang/jvm/Test3;</span><br><span class="line">            <span class="number">3</span>      <span class="number">38</span>     <span class="number">1</span>    s1   Ljava/lang/String;</span><br><span class="line">            <span class="number">6</span>      <span class="number">35</span>     <span class="number">2</span>    s2   Ljava/lang/String;</span><br><span class="line">           <span class="number">14</span>      <span class="number">27</span>     <span class="number">3</span>    sb   Ljava/lang/StringBuilder;</span><br><span class="line">           <span class="number">32</span>       <span class="number">9</span>     <span class="number">4</span>    s3   Ljava/lang/String;</span><br><span class="line">&#125;</span><br><span class="line">SourceFile: <span class="string">"Test3.java"</span></span><br></pre></td></tr></table></figure>
+<p>从解字节码中可以看出，m1()方法源码中是使用+号拼接，但是在字节码中也被编译成了StringBuilder方式。</p>
+<p>所以，可以得出结论，字符串拼接，+号和StringBuilder是相等的，效率一样。</p>
+<p>接下来，我们再看一个案例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.bestqiang.jvm;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test4</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> Test4().m1();</span><br><span class="line">        <span class="keyword">new</span> Test4().m2();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">m1</span><span class="params">()</span></span>&#123;</span><br><span class="line">        String str = <span class="string">""</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line">            str = str + i;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(str);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">m2</span><span class="params">()</span></span>&#123;</span><br><span class="line">        StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line">            sb.append(i);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(sb.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>m1() 与 m2() 哪个方法的效率高？</p>
+<p>依然是通过字节码的方式进行探究。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br></pre></td><td class="code"><pre><span class="line">Classfile /F:/code/bestqiang-jvm/bestqiang-jvm-test/target/classes/cn/bestqiang/jvm/Test4.class</span><br><span class="line">  MD5 checksum f87a55446b8b6cd88b6e54bd5edcc9dc</span><br><span class="line">  Compiled from <span class="string">"Test4.java"</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">cn</span>.<span class="title">bestqiang</span>.<span class="title">jvm</span>.<span class="title">Test4</span></span></span><br><span class="line">  minor version: 0</span><br><span class="line">  major version: <span class="number">52</span></span><br><span class="line">  flags: ACC_PUBLIC, ACC_SUPER</span><br><span class="line">Constant pool:</span><br><span class="line">   #1 = Methodref          #14.#39        // java/lang/Object."&lt;init&gt;":()V</span><br><span class="line">   #2 = Class              #40            // cn/bestqiang/jvm/Test4</span><br><span class="line">   #3 = Methodref          #2.#39         // cn/bestqiang/jvm/Test4."&lt;init&gt;":()V</span><br><span class="line">   #4 = Methodref          #2.#41         // cn/bestqiang/jvm/Test4.m1:()V</span><br><span class="line">   #5 = Methodref          #2.#42         // cn/bestqiang/jvm/Test4.m2:()V</span><br><span class="line">   #6 = String             #43            //</span><br><span class="line">   #7 = Class              #44            // java/lang/StringBuilder</span><br><span class="line">   #8 = Methodref          #7.#39         // java/lang/StringBuilder."&lt;init&gt;":()V</span><br><span class="line">   #9 = Methodref          #7.#45         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span><br><span class="line">  #10 = Methodref          #7.#46         // java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;</span><br><span class="line">  #11 = Methodref          #7.#47         // java/lang/StringBuilder.toString:()Ljava/lang/String;</span><br><span class="line">  #12 = Fieldref           #48.#49        // java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line">  #13 = Methodref          #50.#51        // java/io/PrintStream.println:(Ljava/lang/String;)V</span><br><span class="line">  #14 = Class              #52            // java/lang/Object</span><br><span class="line">  #15 = Utf8               &lt;init&gt;</span><br><span class="line">  #16 = Utf8               ()V</span><br><span class="line">  #17 = Utf8               Code</span><br><span class="line">  #18 = Utf8               LineNumberTable</span><br><span class="line">  #19 = Utf8               LocalVariableTable</span><br><span class="line">  #20 = Utf8               this</span><br><span class="line">  #21 = Utf8               Lcn/bestqiang/jvm/Test4;</span><br><span class="line">  #22 = Utf8               main</span><br><span class="line">  #23 = Utf8               ([Ljava/lang/String;)V</span><br><span class="line">  #24 = Utf8               args</span><br><span class="line">  #25 = Utf8               [Ljava/lang/String;</span><br><span class="line">  #26 = Utf8               m1</span><br><span class="line">  #27 = Utf8               i</span><br><span class="line">  #28 = Utf8               I</span><br><span class="line">  #29 = Utf8               str</span><br><span class="line">  #30 = Utf8               Ljava/lang/String;</span><br><span class="line">  #31 = Utf8               StackMapTable</span><br><span class="line">  #32 = Class              #53            // java/lang/String</span><br><span class="line">  #33 = Utf8               m2</span><br><span class="line">  #34 = Utf8               sb</span><br><span class="line">  #35 = Utf8               Ljava/lang/StringBuilder;</span><br><span class="line">  #36 = Class              #44            // java/lang/StringBuilder</span><br><span class="line">  #37 = Utf8               SourceFile</span><br><span class="line">  #38 = Utf8               Test4.java</span><br><span class="line">  #39 = NameAndType        #15:#16        // "&lt;init&gt;":()V</span><br><span class="line">  #40 = Utf8               cn/bestqiang/jvm/Test4</span><br><span class="line">  #41 = NameAndType        #26:#16        // m1:()V</span><br><span class="line">  #42 = NameAndType        #33:#16        // m2:()V</span><br><span class="line">  #43 = Utf8</span><br><span class="line">  #44 = Utf8               java/lang/StringBuilder</span><br><span class="line">  #45 = NameAndType        #54:#55        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span><br><span class="line">  #46 = NameAndType        #54:#56        // append:(I)Ljava/lang/StringBuilder;</span><br><span class="line">  #47 = NameAndType        #57:#58        // toString:()Ljava/lang/String;</span><br><span class="line">  #48 = Class              #59            // java/lang/System</span><br><span class="line">  #49 = NameAndType        #60:#61        // out:Ljava/io/PrintStream;</span><br><span class="line">  #50 = Class              #62            // java/io/PrintStream</span><br><span class="line">  #51 = NameAndType        #63:#64        // println:(Ljava/lang/String;)V</span><br><span class="line">  #52 = Utf8               java/lang/Object</span><br><span class="line">  #53 = Utf8               java/lang/String</span><br><span class="line">  #54 = Utf8               append</span><br><span class="line">  #55 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;</span><br><span class="line">  #56 = Utf8               (I)Ljava/lang/StringBuilder;</span><br><span class="line">  #57 = Utf8               toString</span><br><span class="line">  #58 = Utf8               ()Ljava/lang/String;</span><br><span class="line">  #59 = Utf8               java/lang/System</span><br><span class="line">  #60 = Utf8               out</span><br><span class="line">  #61 = Utf8               Ljava/io/PrintStream;</span><br><span class="line">  #62 = Utf8               java/io/PrintStream</span><br><span class="line">  #63 = Utf8               println</span><br><span class="line">  #64 = Utf8               (Ljava/lang/String;)V</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">public</span> cn.bestqiang.jvm.Test4();</span><br><span class="line">    descriptor: ()V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=<span class="number">1</span>, locals=<span class="number">1</span>, args_size=<span class="number">1</span></span><br><span class="line">         <span class="number">0</span>: aload_0</span><br><span class="line">         1: invokespecial #1                  // Method java/lang/Object."&lt;init&gt;":()V</span><br><span class="line">         <span class="number">4</span>: <span class="keyword">return</span></span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line <span class="number">3</span>: <span class="number">0</span></span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            <span class="number">0</span>       <span class="number">5</span>     <span class="number">0</span>  <span class="keyword">this</span>   Lcn/bestqiang/jvm/Test4;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(java.lang.String[])</span></span>;</span><br><span class="line">    descriptor: ([Ljava/lang/String;)V</span><br><span class="line">    flags: ACC_PUBLIC, ACC_STATIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=<span class="number">2</span>, locals=<span class="number">1</span>, args_size=<span class="number">1</span></span><br><span class="line">         0: new           #2                  // class cn/bestqiang/jvm/Test4</span><br><span class="line">         <span class="number">3</span>: dup</span><br><span class="line">         4: invokespecial #3                  // Method "&lt;init&gt;":()V</span><br><span class="line">         7: invokevirtual #4                  // Method m1:()V</span><br><span class="line">        10: new           #2                  // class cn/bestqiang/jvm/Test4</span><br><span class="line">        <span class="number">13</span>: dup</span><br><span class="line">        14: invokespecial #3                  // Method "&lt;init&gt;":()V</span><br><span class="line">        17: invokevirtual #5                  // Method m2:()V</span><br><span class="line">        <span class="number">20</span>: <span class="keyword">return</span></span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line <span class="number">6</span>: <span class="number">0</span></span><br><span class="line">        line <span class="number">7</span>: <span class="number">10</span></span><br><span class="line">        line <span class="number">8</span>: <span class="number">20</span></span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            <span class="number">0</span>      <span class="number">21</span>     <span class="number">0</span>  args   [Ljava/lang/String;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">m1</span><span class="params">()</span></span>;</span><br><span class="line">    descriptor: ()V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=<span class="number">2</span>, locals=<span class="number">3</span>, args_size=<span class="number">1</span></span><br><span class="line">         0: ldc           #6                  // String</span><br><span class="line">         <span class="number">2</span>: astore_1  <span class="comment">// 将空字符串压入到本地变量表中的下标为1的位置</span></span><br><span class="line">         <span class="number">3</span>: iconst_0  <span class="comment">// 将数字0压入操作栈顶</span></span><br><span class="line">         <span class="number">4</span>: istore_2  <span class="comment">// 将栈顶数字0压入到本地变量表中的下标为2的位置</span></span><br><span class="line">         <span class="number">5</span>: iload_2  <span class="comment">// 将本地变量中下标为2的数字0压入操作栈顶</span></span><br><span class="line">         <span class="number">6</span>: iconst_5 <span class="comment">// 将数字5压入操作栈顶</span></span><br><span class="line">         <span class="number">7</span>: if_icmpge     <span class="number">35</span>  <span class="comment">//比较栈顶两int型数值大小，当结果大于等于0时跳转到35</span></span><br><span class="line">        10: new           #7                  // class java/lang/StringBuilder</span><br><span class="line">        <span class="number">13</span>: dup  <span class="comment">//复制栈顶数值并将复制值压入栈顶(数字5)</span></span><br><span class="line">        14: invokespecial #8                  // Method java/lang/StringBuilder."&lt;init&gt;":()V</span><br><span class="line">        <span class="number">17</span>: aload_1</span><br><span class="line">        18: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span><br><span class="line">        <span class="number">21</span>: iload_2 <span class="comment">//将本地变量中下标为2的数字0压入操作栈顶</span></span><br><span class="line">        22: invokevirtual #10                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;</span><br><span class="line">        25: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;</span><br><span class="line">        <span class="number">28</span>: astore_1</span><br><span class="line">        <span class="number">29</span>: iinc          <span class="number">2</span>, <span class="number">1</span></span><br><span class="line">        <span class="number">32</span>: goto          <span class="number">5</span></span><br><span class="line">        35: getstatic     #12                 // Field java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line">        <span class="number">38</span>: aload_1</span><br><span class="line">        39: invokevirtual #13                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V</span><br><span class="line">        <span class="number">42</span>: <span class="keyword">return</span></span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line <span class="number">11</span>: <span class="number">0</span></span><br><span class="line">        line <span class="number">12</span>: <span class="number">3</span></span><br><span class="line">        line <span class="number">13</span>: <span class="number">10</span></span><br><span class="line">        line <span class="number">12</span>: <span class="number">29</span></span><br><span class="line">        line <span class="number">15</span>: <span class="number">35</span></span><br><span class="line">        line <span class="number">16</span>: <span class="number">42</span></span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            <span class="number">5</span>      <span class="number">30</span>     <span class="number">2</span>     i   I</span><br><span class="line">            <span class="number">0</span>      <span class="number">43</span>     <span class="number">0</span>  <span class="keyword">this</span>   Lcn/bestqiang/jvm/Test4;</span><br><span class="line">            <span class="number">3</span>      <span class="number">40</span>     <span class="number">1</span>   str   Ljava/lang/String;</span><br><span class="line">      StackMapTable: number_of_entries = <span class="number">2</span></span><br><span class="line">        frame_type = <span class="number">253</span> <span class="comment">/* append */</span></span><br><span class="line">          offset_delta = <span class="number">5</span></span><br><span class="line">          locals = [ class java/lang/String, int ]</span><br><span class="line">        frame_type = <span class="number">250</span> <span class="comment">/* chop */</span></span><br><span class="line">          offset_delta = <span class="number">29</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">m2</span><span class="params">()</span></span>;</span><br><span class="line">    descriptor: ()V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=<span class="number">2</span>, locals=<span class="number">3</span>, args_size=<span class="number">1</span></span><br><span class="line">         0: new           #7                  // class java/lang/StringBuilder</span><br><span class="line">         <span class="number">3</span>: dup</span><br><span class="line">         4: invokespecial #8                  // Method java/lang/StringBuilder."&lt;init&gt;":()V</span><br><span class="line">         <span class="number">7</span>: astore_1</span><br><span class="line">         <span class="number">8</span>: iconst_0</span><br><span class="line">         <span class="number">9</span>: istore_2</span><br><span class="line">        <span class="number">10</span>: iload_2</span><br><span class="line">        <span class="number">11</span>: iconst_5</span><br><span class="line">        <span class="number">12</span>: if_icmpge     <span class="number">27</span></span><br><span class="line">        <span class="number">15</span>: aload_1</span><br><span class="line">        <span class="number">16</span>: iload_2</span><br><span class="line">        17: invokevirtual #10                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;</span><br><span class="line">        <span class="number">20</span>: pop</span><br><span class="line">        <span class="number">21</span>: iinc          <span class="number">2</span>, <span class="number">1</span></span><br><span class="line">        <span class="number">24</span>: goto          <span class="number">10</span></span><br><span class="line">        27: getstatic     #12                 // Field java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line">        <span class="number">30</span>: aload_1</span><br><span class="line">        31: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;</span><br><span class="line">        34: invokevirtual #13                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V</span><br><span class="line">        <span class="number">37</span>: <span class="keyword">return</span></span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line <span class="number">19</span>: <span class="number">0</span></span><br><span class="line">        line <span class="number">20</span>: <span class="number">8</span></span><br><span class="line">        line <span class="number">21</span>: <span class="number">15</span></span><br><span class="line">        line <span class="number">20</span>: <span class="number">21</span></span><br><span class="line">        line <span class="number">23</span>: <span class="number">27</span></span><br><span class="line">        line <span class="number">24</span>: <span class="number">37</span></span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">           <span class="number">10</span>      <span class="number">17</span>     <span class="number">2</span>     i   I</span><br><span class="line">            <span class="number">0</span>      <span class="number">38</span>     <span class="number">0</span>  <span class="keyword">this</span>   Lcn/bestqiang/jvm/Test4;</span><br><span class="line">            <span class="number">8</span>      <span class="number">30</span>     <span class="number">1</span>    sb   Ljava/lang/StringBuilder;</span><br><span class="line">      StackMapTable: number_of_entries = <span class="number">2</span></span><br><span class="line">        frame_type = <span class="number">253</span> <span class="comment">/* append */</span></span><br><span class="line">          offset_delta = <span class="number">10</span></span><br><span class="line">          locals = [ class java/lang/StringBuilder, int ]</span><br><span class="line">        frame_type = <span class="number">250</span> <span class="comment">/* chop */</span></span><br><span class="line">          offset_delta = <span class="number">16</span></span><br><span class="line">&#125;</span><br><span class="line">SourceFile: <span class="string">"Test4.java"</span></span><br></pre></td></tr></table></figure>
+<p>可以看到，m1()方法中的循环体内，每一次循环都会创建StringBuilder对象，效率低于m2()方法。</p>
+<h3 id="2-7、小结"><a href="#2-7、小结" class="headerlink" title="2.7、小结"></a>2.7、小结</h3><p>使用字节码的方式可以很好查看代码底层的执行，从而可以看出哪些实现效率高，哪些实现效率低。可以更好的对我们的代码做优化。让程序执行效率更高。</p>
+<h2 id="3、代码优化"><a href="#3、代码优化" class="headerlink" title="3、代码优化"></a>3、代码优化</h2><p>优化，不仅仅是在运行环境进行优化，还需要在代码本身做优化，如果代码本身存在性能问题，那么在其他方面再怎么优化也不可能达到效果最优的。</p>
+<h3 id="3-1、尽可能使用局部变量"><a href="#3-1、尽可能使用局部变量" class="headerlink" title="3.1、尽可能使用局部变量"></a>3.1、尽可能使用局部变量</h3><p>调用方法时传递的参数以及在调用中创建的临时变量都保存在栈中速度较快，其他变量，如静态变量、实例变量等，都在堆中创建，速度较慢。另外，栈中创建的变量，随着方法的运行结束，这些内容就没了，不需要额外的垃圾回收。</p>
+<h3 id="3-2、尽量减少对变量的重复计算"><a href="#3-2、尽量减少对变量的重复计算" class="headerlink" title="3.2、尽量减少对变量的重复计算"></a>3.2、尽量减少对变量的重复计算</h3><p>明确一个概念，对方法的调用，即使方法中只有一句语句，也是有消耗的。所以例如下面的操作：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; list.size(); i++)</span><br><span class="line">&#123;...&#125;</span><br></pre></td></tr></table></figure>
+<p>建议替换为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> length = list.size();</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>,  i &lt; length; i++)</span><br><span class="line"></span><br><span class="line">&#123;...&#125;</span><br></pre></td></tr></table></figure>
+<p>这样，在list.size()很大的时候，就减少了很多的消耗。</p>
+<h3 id="3-3、尽量采用懒加载的策略，即在需要的时候才创建"><a href="#3-3、尽量采用懒加载的策略，即在需要的时候才创建" class="headerlink" title="3.3、尽量采用懒加载的策略，即在需要的时候才创建"></a>3.3、尽量采用懒加载的策略，即在需要的时候才创建</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">String str = <span class="string">"aaa"</span>;</span><br><span class="line"><span class="keyword">if</span> (i == <span class="number">1</span>)&#123;</span><br><span class="line">　　list.add(str);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//建议替换成</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (i == <span class="number">1</span>)&#123;</span><br><span class="line">　　String str = <span class="string">"aaa"</span>;</span><br><span class="line">　　list.add(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-4、异常不应该用来控制程序流程"><a href="#3-4、异常不应该用来控制程序流程" class="headerlink" title="3.4、异常不应该用来控制程序流程"></a>3.4、异常不应该用来控制程序流程</h3><p>异常对性能不利。抛出异常首先要创建一个新的对象，Throwable接口的构造函数调用名为fillInStackTrace()的本地同步方 法，fillInStackTrace()方法检查堆栈，收集调用跟踪信息。只要有异常被抛出，Java虚拟机就必须调整调用堆栈，因为在处理过程中创建 了一个新的对象。异常只能用于错误处理，不应该用来控制程序流程。</p>
+<h3 id="3-5、不要将数组声明为public-static-final"><a href="#3-5、不要将数组声明为public-static-final" class="headerlink" title="3.5、不要将数组声明为public static final"></a>3.5、不要将数组声明为public static final</h3><p>因为这毫无意义，这样只是定义了引用为static final，数组的内容还是可以随意改变的，将数组声明为public更是一个安全漏洞，这意味着这个数组可以被外部类所改变。</p>
+<h3 id="3-6、不要创建一些不使用的对象，不要导入一些不使用的类"><a href="#3-6、不要创建一些不使用的对象，不要导入一些不使用的类" class="headerlink" title="3.6、不要创建一些不使用的对象，不要导入一些不使用的类"></a>3.6、不要创建一些不使用的对象，不要导入一些不使用的类</h3><p>这毫无意义，如果代码中出现”The value of the local variable i is not used”、”The import java.util is never used”，那么请删除这些无用的内容</p>
+<h3 id="3-7、程序运行过程中避免使用反射"><a href="#3-7、程序运行过程中避免使用反射" class="headerlink" title="3.7、程序运行过程中避免使用反射"></a>3.7、程序运行过程中避免使用反射</h3><p>反射是Java提供给用户一个很强大的功能，功能强大往往意味着效率不高。不建议在程序运行过程中使用尤其是频繁使用反射机制，特别是 Method的invoke方法。</p>
+<p>如果确实有必要，一种建议性的做法是将那些需要通过反射加载的类在项目启动的时候通过反射实例化出一个对象并放入内存。</p>
+<h3 id="3-8、使用数据库连接池和线程池"><a href="#3-8、使用数据库连接池和线程池" class="headerlink" title="3.8、使用数据库连接池和线程池"></a>3.8、使用数据库连接池和线程池</h3><p>这两个池都是用于重用对象的，前者可以避免频繁地打开和关闭连接，后者可以避免频繁地创建和销毁线程。</p>
+<h3 id="3-9、容器初始化时尽可能指定长度"><a href="#3-9、容器初始化时尽可能指定长度" class="headerlink" title="3.9、容器初始化时尽可能指定长度"></a>3.9、容器初始化时尽可能指定长度</h3><p>容器初始化时尽可能指定长度，如：new ArrayList&lt;&gt;(10); new HashMap&lt;&gt;(32); 避免容器长度不足时，扩容带来的性能损耗。</p>
+<h3 id="3-10、ArrayList随机遍历快，LinkedList添加删除快"><a href="#3-10、ArrayList随机遍历快，LinkedList添加删除快" class="headerlink" title="3.10、ArrayList随机遍历快，LinkedList添加删除快"></a>3.10、ArrayList随机遍历快，LinkedList添加删除快</h3><h3 id="3-11、使用Entry遍历Map"><a href="#3-11、使用Entry遍历Map" class="headerlink" title="3.11、使用Entry遍历Map"></a>3.11、使用Entry遍历Map</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;String,String&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line"><span class="keyword">for</span> (Map.Entry&lt;String,String&gt; entry : map.entrySet()) &#123;</span><br><span class="line">    String key = entry.getKey();</span><br><span class="line">    String value = entry.getValue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>避免使用这种方式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;String,String&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line"><span class="keyword">for</span> (String key : map.keySet()) &#123;</span><br><span class="line">    String value = map.get(key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-12、不要手动调用System-gc"><a href="#3-12、不要手动调用System-gc" class="headerlink" title="3.12、不要手动调用System.gc();"></a>3.12、不要手动调用System.gc();</h3><h3 id="3-13、String尽量少用正则表达式"><a href="#3-13、String尽量少用正则表达式" class="headerlink" title="3.13、String尽量少用正则表达式"></a>3.13、String尽量少用正则表达式</h3><p>正则表达式虽然功能强大，但是其效率较低，除非是有需要，否则尽可能少用。</p>
+<p>replace()  不支持正则<br>replaceAll() 支持正则</p>
+<p>如果仅仅是字符的替换建议使用replace()。</p>
+<h3 id="3-14、日志的输出要注意级别"><a href="#3-14、日志的输出要注意级别" class="headerlink" title="3.14、日志的输出要注意级别"></a>3.14、日志的输出要注意级别</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 当前的日志级别是error</span></span><br><span class="line">LOGGER.info(<span class="string">"保存出错！"</span> + user);</span><br></pre></td></tr></table></figure>
+<h3 id="3-15、对资源的close-建议分开操作"><a href="#3-15、对资源的close-建议分开操作" class="headerlink" title="3.15、对资源的close()建议分开操作"></a>3.15、对资源的close()建议分开操作</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">    XXX.close();</span><br><span class="line">    YYY.close();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 建议改为</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">    XXX.close();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line"></span><br><span class="line">    YYY.close();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+	<div>
+  
+    <div>
+
+    <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+
+</div>
+
+  
+	</div>
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>钱不钱的不重要，重要的是文章读了有收获，您说是吧？</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="BestQiang 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.png" alt="BestQiang 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JVM/" rel="tag"><i class="fa fa-tag"></i> JVM</a>
+          
+            <a href="/tags/Tomcat/" rel="tag"><i class="fa fa-tag"></i> Tomcat</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div class="social_share">
+            
+            
+            
+              <div>
+                
+  <div class="bdsharebuttonbox">
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣网"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+    <a href="#" class="bds_tieba" data-cmd="tieba" title="分享到百度贴吧"></a>
+    <a href="#" class="bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+    <a href="#" class="bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a class="bds_count" data-cmd="count"></a>
+  </div>
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "2",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "share": {
+        "bdSize": "16",
+        "bdStyle": "0"
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];;
+</script>
+
+              </div>
+            
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/30/GC之垃圾回收算法和垃圾处理器/" rel="next" title="GC之垃圾回收算法和垃圾处理器">
+                <i class="fa fa-chevron-left"></i> GC之垃圾回收算法和垃圾处理器
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/30/JVM优化基础和JDK工具的使用/" rel="prev" title="JVM优化基础和JDK工具的使用">
+                JVM优化基础和JDK工具的使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/wxy.JPEG" alt="BestQiang">
+            
+              <p class="site-author-name" itemprop="name">BestQiang</p>
+              <div class="site-description motion-element" itemprop="description">技术的进步来自于不懈的追求!</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">26</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/BestQiang" title="GitHub &rarr; https://github.com/BestQiang" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://blog.csdn.net/qq_29951485" title="CSDN &rarr; https://blog.csdn.net/qq_29951485" rel="noopener" target="_blank"><i class="fa fa-fw fa-heartbeat"></i>CSDN</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#JVM优化-Tomcat优化"><span class="nav-text">JVM优化+Tomcat优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1、Tomcat8优化"><span class="nav-text">1、Tomcat8优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1、Tomcat配置优化"><span class="nav-text">1.1、Tomcat配置优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-1、部署安装tomcat8"><span class="nav-text">1.1.1、部署安装tomcat8</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-2、禁用AJP连接"><span class="nav-text">1.1.2、禁用AJP连接</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-3、执行器（线程池）"><span class="nav-text">1.1.3、执行器（线程池）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-4、3种运行模式"><span class="nav-text">1.1.4、3种运行模式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2、部署测试用的java-web项目"><span class="nav-text">1.2、部署测试用的java web项目</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-1、创建dashboard数据库"><span class="nav-text">1.2.1、创建dashboard数据库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-2、部署web应用"><span class="nav-text">1.2.2、部署web应用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3、使用Apache-JMeter进行测试"><span class="nav-text">1.3、使用Apache JMeter进行测试</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-1、下载安装"><span class="nav-text">1.3.1、下载安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-2、修改主题和语言"><span class="nav-text">1.3.2、修改主题和语言</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-3、创建首页的测试用例"><span class="nav-text">1.3.3、创建首页的测试用例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-4、启动、进行测试"><span class="nav-text">1.3.4、启动、进行测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-5、聚合报告"><span class="nav-text">1.3.5、聚合报告</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4、调整tomcat参数进行优化"><span class="nav-text">1.4、调整tomcat参数进行优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-1、禁用AJP服务"><span class="nav-text">1.4.1、禁用AJP服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-2、设置线程池"><span class="nav-text">1.4.2、设置线程池</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-4-2-1、最大线程数为500，初始为50"><span class="nav-text">1.4.2.1、最大线程数为500，初始为50</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#1-4-2-2、最大线程数为1000，初始为200"><span class="nav-text">1.4.2.2、最大线程数为1000，初始为200</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#1-4-2-3、最大线程数为5000，初始为1000"><span class="nav-text">1.4.2.3、最大线程数为5000，初始为1000</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#1-4-2-4、设置最大等待队列数"><span class="nav-text">1.4.2.4、设置最大等待队列数</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-3、设置nio2的运行模式"><span class="nav-text">1.4.3、设置nio2的运行模式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5、调整JVM参数进行优化"><span class="nav-text">1.5、调整JVM参数进行优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-5-1、设置并行垃圾回收器"><span class="nav-text">1.5.1、设置并行垃圾回收器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-5-2、查看gc日志文件"><span class="nav-text">1.5.2、查看gc日志文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-5-3、调整年轻代大小"><span class="nav-text">1.5.3、调整年轻代大小</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-5-4、设置G1垃圾回收器"><span class="nav-text">1.5.4、设置G1垃圾回收器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-5-5、小结"><span class="nav-text">1.5.5、小结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、JVM字节码"><span class="nav-text">2、JVM字节码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1、通过javap命令查看class文件的字节码内容"><span class="nav-text">2.1、通过javap命令查看class文件的字节码内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2、常量池"><span class="nav-text">2.2、常量池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3、描述符"><span class="nav-text">2.3、描述符</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-1、字段描述符"><span class="nav-text">2.3.1、字段描述符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-2、方法描述符"><span class="nav-text">2.3.2、方法描述符</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4、解读方法字节码"><span class="nav-text">2.4、解读方法字节码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-1、图解"><span class="nav-text">2.4.1、图解</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5、研究-i-与-i-的不同"><span class="nav-text">2.5、研究 i++ 与 ++i 的不同</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-5-1、查看class字节码"><span class="nav-text">2.5.1、查看class字节码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-5-2、对比"><span class="nav-text">2.5.2、对比</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-6、字符串拼接"><span class="nav-text">2.6、字符串拼接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-7、小结"><span class="nav-text">2.7、小结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、代码优化"><span class="nav-text">3、代码优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1、尽可能使用局部变量"><span class="nav-text">3.1、尽可能使用局部变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2、尽量减少对变量的重复计算"><span class="nav-text">3.2、尽量减少对变量的重复计算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3、尽量采用懒加载的策略，即在需要的时候才创建"><span class="nav-text">3.3、尽量采用懒加载的策略，即在需要的时候才创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4、异常不应该用来控制程序流程"><span class="nav-text">3.4、异常不应该用来控制程序流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5、不要将数组声明为public-static-final"><span class="nav-text">3.5、不要将数组声明为public static final</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6、不要创建一些不使用的对象，不要导入一些不使用的类"><span class="nav-text">3.6、不要创建一些不使用的对象，不要导入一些不使用的类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-7、程序运行过程中避免使用反射"><span class="nav-text">3.7、程序运行过程中避免使用反射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-8、使用数据库连接池和线程池"><span class="nav-text">3.8、使用数据库连接池和线程池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-9、容器初始化时尽可能指定长度"><span class="nav-text">3.9、容器初始化时尽可能指定长度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-10、ArrayList随机遍历快，LinkedList添加删除快"><span class="nav-text">3.10、ArrayList随机遍历快，LinkedList添加删除快</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-11、使用Entry遍历Map"><span class="nav-text">3.11、使用Entry遍历Map</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-12、不要手动调用System-gc"><span class="nav-text">3.12、不要手动调用System.gc();</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-13、String尽量少用正则表达式"><span class="nav-text">3.13、String尽量少用正则表达式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-14、日志的输出要注意级别"><span class="nav-text">3.14、日志的输出要注意级别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-15、对资源的close-建议分开操作"><span class="nav-text">3.15、对资源的close()建议分开操作</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2019 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">BestQiang</span>
+
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">8:42</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.1"></script>
+
+  <script src="/js/src/motion.js?v=7.0.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=7.0.1"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=7.0.1"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.1"></script>
+<script src="/js/src/post-details.js?v=7.0.1"></script>
+
+
+
+  
+
+
+  <script src="/js/src/next-boot.js?v=7.0.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+  
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: true,
+    appId: 'AKC9sihabckQ6D8LK6tGoXuA-gzGzoHsz',
+    appKey: 'EEHjF9YRs6istjqzdeIXKHem',
+    placeholder: 'Just go go',
+    avatar: 'wavatar',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+<!-- 页面点击小红心 --> <script type="text/javascript" src="/js/src/love.js"></script>
