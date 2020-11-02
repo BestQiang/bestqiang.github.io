@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/icon.ico?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/icon2.ico?v=7.0.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.0.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: true,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Canal简介canal [kə’næl]，译意为水道/管道/沟渠，主要用途是基于 MySQL 数据库增量日志解析，提供增量数据订阅和消费 早期阿里巴巴因为杭州和美国双机房部署，存在跨机房同步的业务需求，实现方式主要是基于业务 trigger 获取增量变更。从 2010 年开始，业务逐步尝试数据库日志解析获取增量变更进行同步，由此衍生出了大量的数据库增量订阅和消费业务。">
+<meta name="keywords" content="Canal">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一起来学高性能数据同步系统Canal">
+<meta property="og:url" content="http://yoursite.com/2020/07/29/一起来学高性能数据同步系统Canal/index.html">
+<meta property="og:site_name" content="我就是BestQiang">
+<meta property="og:description" content="Canal简介canal [kə’næl]，译意为水道/管道/沟渠，主要用途是基于 MySQL 数据库增量日志解析，提供增量数据订阅和消费 早期阿里巴巴因为杭州和美国双机房部署，存在跨机房同步的业务需求，实现方式主要是基于业务 trigger 获取增量变更。从 2010 年开始，业务逐步尝试数据库日志解析获取增量变更进行同步，由此衍生出了大量的数据库增量订阅和消费业务。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2020/07/29/一起来学高性能数据同步系统Canal/2020-07-29%2019-43-59%20的屏幕截图.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/29/一起来学高性能数据同步系统Canal/image-20200729194058128.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/29/一起来学高性能数据同步系统Canal/2020-07-28%2021-37-50%20的屏幕截图.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/29/一起来学高性能数据同步系统Canal/2020-07-28%2016-11-28%20的屏幕截图.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/29/一起来学高性能数据同步系统Canal/image-20200729202036621.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/29/一起来学高性能数据同步系统Canal/2020-07-30%2009-56-18%20的屏幕截图.png">
+<meta property="og:image" content="http://yoursite.com/2020/07/29/一起来学高性能数据同步系统Canal/4faa7c2e-ed95-3638-a3e2-8b481c8e4060.jpg">
+<meta property="og:updated_time" content="2020-07-30T04:57:03.777Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一起来学高性能数据同步系统Canal">
+<meta name="twitter:description" content="Canal简介canal [kə’næl]，译意为水道/管道/沟渠，主要用途是基于 MySQL 数据库增量日志解析，提供增量数据订阅和消费 早期阿里巴巴因为杭州和美国双机房部署，存在跨机房同步的业务需求，实现方式主要是基于业务 trigger 获取增量变更。从 2010 年开始，业务逐步尝试数据库日志解析获取增量变更进行同步，由此衍生出了大量的数据库增量订阅和消费业务。">
+<meta name="twitter:image" content="http://yoursite.com/2020/07/29/一起来学高性能数据同步系统Canal/2020-07-29%2019-43-59%20的屏幕截图.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="我就是BestQiang" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/07/29/一起来学高性能数据同步系统Canal/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>一起来学高性能数据同步系统Canal | 我就是BestQiang</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+<a href="https://github.com/BestQiang" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">我就是BestQiang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">活着就是为了改变世界，难道还有其他原因吗？</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/29/一起来学高性能数据同步系统Canal/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="BestQiang">
+      <meta itemprop="description" content="技术的进步来自于不懈的追求!">
+      <meta itemprop="image" content="/uploads/Hermione.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="我就是BestQiang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">一起来学高性能数据同步系统Canal
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-07-29 17:41:13" itemprop="dateCreated datePublished" datetime="2020-07-29T17:41:13+08:00">2020-07-29</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-07-30 12:57:03" itemprop="dateModified" datetime="2020-07-30T12:57:03+08:00">2020-07-30</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Canal/" itemprop="url" rel="index"><span itemprop="name">Canal</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2020/07/29/一起来学高性能数据同步系统Canal/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/07/29/一起来学高性能数据同步系统Canal/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+            <span id="/2020/07/29/一起来学高性能数据同步系统Canal/" class="leancloud_visitors" data-flag-title="一起来学高性能数据同步系统Canal">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读次数：</span>
+              
+                <span class="leancloud-visitors-count"></span>
+            </span>
+          
+
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">9.4k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">17 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Canal简介"><a href="#Canal简介" class="headerlink" title="Canal简介"></a>Canal简介</h1><p><strong>canal [kə’næl]</strong>，译意为水道/管道/沟渠，主要用途是基于 MySQL 数据库增量日志解析，提供增量数据订阅和消费</p>
+<p>早期阿里巴巴因为杭州和美国双机房部署，存在跨机房同步的业务需求，实现方式主要是基于业务 trigger 获取增量变更。从 2010 年开始，业务逐步尝试数据库日志解析获取增量变更进行同步，由此衍生出了大量的数据库增量订阅和消费业务。</p>
+<a id="more"></a>
+<p>基于日志增量订阅和消费的业务包括</p>
+<ul>
+<li>数据库镜像</li>
+<li>数据库实时备份</li>
+<li>索引构建和实时维护(拆分异构索引、倒排索引等)</li>
+<li>业务 cache 刷新</li>
+<li>带业务逻辑的增量数据处理</li>
+</ul>
+<p>当前的 canal 支持源端 MySQL 版本包括 5.1.x , 5.5.x , 5.6.x , 5.7.x , 8.0.x</p>
+<p><strong>工作原理</strong></p>
+<ul>
+<li>canal 模拟 MySQL slave 的交互协议，伪装自己为 MySQL slave ，向 MySQL master 发送 dump 协议</li>
+<li>MySQL master 收到 dump 请求，开始推送 binary log 给 slave (即 canal )</li>
+<li>canal 解析 binary log 对象(原始为 byte 流)</li>
+</ul>
+<h1 id="学习"><a href="#学习" class="headerlink" title="学习"></a>学习</h1><ul>
+<li><p>秉承着一切以官方文档为准的思想,先找Canal的官方github地址: <a href="https://github.com/alibaba/canal" target="_blank" rel="noopener">https://github.com/alibaba/canal</a> </p>
+</li>
+<li><p>Canal的官方文档非常优秀,对Canal的介绍全面而且清晰,学习canal完全够用了,这里主要记录一些实践的感悟和遇到的问题.</p>
+</li>
+</ul>
+<h2 id="快速应用和API了解"><a href="#快速应用和API了解" class="headerlink" title="快速应用和API了解"></a>快速应用和API了解</h2><h3 id="搭建环境"><a href="#搭建环境" class="headerlink" title="搭建环境"></a>搭建环境</h3><p>本次实验在本机利用VMWare虚拟机搭建了CentOS7系统,安装了JDK(操作简单,不再讲了),然后安装了MySQL数据库和,具体的过程不再详细介绍,安装MySQL可以直接看博客(如果使用本地MySQL也是可以的,但是一般来说为了模拟真实环境,我还是习惯把MySQL装在虚拟机):</p>
+<p> <a href="https://www.cnblogs.com/zsh-blogs/p/11497720.html" target="_blank" rel="noopener">Centos7 安装MySQL 5.7</a></p>
+<p><a href="https://blog.csdn.net/EB_NUM/article/details/105425622" target="_blank" rel="noopener">【centos7 + MySQL5.7 安装】centos7 安装MySQL5.7</a></p>
+<p>值得注意的是,yum install mysql后还需要执行命令安装mariadb-server,两篇博客没有提到这点</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y mariadb-server</span><br></pre></td></tr></table></figure>
+<p>给mysql设置初始密码时,如果密码过于简单,可能会有下面的提示:</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ERROR <span class="number">1819</span> (HY000): Your password does <span class="keyword">not</span> satisfy the current policy requirements</span><br></pre></td></tr></table></figure>
+<p>MySQL中使用以下命令即可解决:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">set global validate_password_policy=0;</span><br><span class="line">set global validate_password_length=1;</span><br></pre></td></tr></table></figure>
+<p>编辑mysql的my.cnf文件,命令: vim /etc/my.cnf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">log-bin=mysql-bin # 开启 binlog</span><br><span class="line">binlog-format=ROW # 选择 ROW 模式</span><br><span class="line">server_id=1 # 配置 MySQL replaction 需要定义，不要和 canal 的 slaveId 重复</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/29/一起来学高性能数据同步系统Canal/2020-07-29 19-43-59 的屏幕截图.png" alt="2020-07-29 19-43-59 的屏幕截图"></p>
+<p>然后开始下载Canal,在官方网址选合适的版本 <a href="https://github.com/alibaba/canal/releases" target="_blank" rel="noopener">https://github.com/alibaba/canal/releases</a> ,使用wget下载解压即可.</p>
+<p><img src="/2020/07/29/一起来学高性能数据同步系统Canal/image-20200729194058128.png" alt="image-20200729194058128"></p>
+<p>值得注意的是,使用宿主机连接linux虚拟机的Canal时,务必打开防火墙的11111端口(Canal默认端口),命令如下:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//开启端口</span><br><span class="line">firewall-cmd --zone=public --add-port=11111/tcp --permanent</span><br></pre></td></tr></table></figure>
+<p>附上防火墙端口操作其他命令:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//查询端口号11111是否开启：</span><br><span class="line">firewall-cmd --query-port=11111/tcp</span><br><span class="line">//重启防火墙：</span><br><span class="line">firewall-cmd --reload</span><br><span class="line">//查询有哪些端口是开启的:</span><br><span class="line">firewall-cmd --list-port</span><br><span class="line">//禁用端口</span><br><span class="line">firewall-cmd --zone=public --remove-port=11111/tcp --permanent</span><br></pre></td></tr></table></figure>
+<p>配置完毕后,就可以直接看官方文档进行后续操作了: <a href="https://github.com/alibaba/canal/wiki/QuickStart" target="_blank" rel="noopener">https://github.com/alibaba/canal/wiki/QuickStart</a></p>
+<p>关于MySQL的用户MySQL slave的权限,测试的时候我们可以直接用ROOT用户,它默认就有权限,其实不需要配置了.</p>
+<p>这里我简单进行配置然后启动成功:</p>
+<p><img src="/2020/07/29/一起来学高性能数据同步系统Canal/2020-07-28 21-37-50 的屏幕截图.png" alt="2020-07-28 21-37-50 的屏幕截图"></p>
+<p>运行  ./bin/startup.sh 启动成功,可以查看日志:</p>
+<p><img src="/2020/07/29/一起来学高性能数据同步系统Canal/2020-07-28 16-11-28 的屏幕截图.png" alt="2020-07-28 16-11-28 的屏幕截图"></p>
+<h3 id="Client-API基本了解和连接Canal服务"><a href="#Client-API基本了解和连接Canal服务" class="headerlink" title="Client API基本了解和连接Canal服务"></a>Client API基本了解和连接Canal服务</h3><p>建立maven工程,引入Canal的client包坐标:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;com.alibaba.otter&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;canal.client&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;1.1.0&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<p>按照官方的文档的目录<a href="https://github.com/alibaba/canal/wiki/ClientExample" target="_blank" rel="noopener">ClientExample</a> ,里面没有什么有价值的信息,跟着这个example去下载源码也看不太明白,少走弯路.可以直接点开<a href="https://github.com/alibaba/canal/wiki/ClientAPI" target="_blank" rel="noopener">ClientAPI</a>,里面非常详细的介绍了</p>
+<ul>
+<li>canal client的类设计</li>
+<li>流式API的异步响应模型</li>
+<li>数据对象格式(protobuff高效格式)</li>
+<li>基本使用的例子.</li>
+</ul>
+<p>不得不说这文档写的很详细,而且有清晰有条理,看完后在下载源码进行阅读,看起来就轻松多了,下面是我写的一个测试用例(非HA模式,HA模式配置等看完下面两章配置以后,用Cluster进行连接就ok了),大家可以直接copy改一下地址在本地测试.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 根据ip，直接创建链接，无HA的功能</span></span><br><span class="line">        String destination = <span class="string">"example"</span>;</span><br><span class="line">        CanalConnector connector = CanalConnectors.newSingleConnector(<span class="keyword">new</span> InetSocketAddress(<span class="string">"192.168.122.3"</span>, <span class="number">11111</span>),</span><br><span class="line">                destination,</span><br><span class="line">                <span class="string">"root"</span>,</span><br><span class="line">                <span class="string">"bestqiang"</span>);</span><br><span class="line">        connector.connect();</span><br><span class="line">        connector.subscribe();</span><br><span class="line">        <span class="keyword">int</span> batchSize = <span class="number">5</span> * <span class="number">1024</span>;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            Message message = connector.getWithoutAck(batchSize); <span class="comment">// 获取指定数量的数据</span></span><br><span class="line">            <span class="comment">// ackQueue.add(batchId); // 添加到ack处理队列,由异步线程进行ack,可直接获取下一批数据</span></span><br><span class="line">            <span class="keyword">long</span> batchId = message.getId();</span><br><span class="line">            <span class="keyword">int</span> size = message.getEntries().size();</span><br><span class="line">            List&lt;Entry&gt; entries = message.getEntries();</span><br><span class="line">            <span class="keyword">if</span> (batchId == -<span class="number">1</span> || size == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    log.error(<span class="string">"程序出错"</span>);</span><br><span class="line">                    connector.rollback(batchId); <span class="comment">// 处理失败, 回滚数据</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                log.info(<span class="string">"================&gt; 本次的的batchId为: &#123;&#125;"</span>, batchId);</span><br><span class="line">                log.info(<span class="string">"================&gt; 本次请求的大小为: &#123;&#125;"</span>, size);</span><br><span class="line">                <span class="keyword">for</span> (Entry entry : entries) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (entry.getEntryType() == EntryType.TRANSACTIONBEGIN</span><br><span class="line">                            || entry.getEntryType() == EntryType.TRANSACTIONEND</span><br><span class="line">                            || entry.getEntryType() == EntryType.HEARTBEAT) &#123;</span><br><span class="line">                        <span class="keyword">continue</span>;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    RowChange rowChage = <span class="keyword">null</span>;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        rowChage = RowChange.parseFrom(entry.getStoreValue());</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                        log.error(<span class="string">"ERROR ## parser of eromanga-event has an error , data:"</span></span><br><span class="line">                                + entry.toString(), e);</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    EventType eventType = rowChage.getEventType();</span><br><span class="line">                    log.info(String.format(<span class="string">"binlog[%s:%s] , name[%s,%s] , eventType : %s"</span>,</span><br><span class="line">                            entry.getHeader().getLogfileName(),</span><br><span class="line">                            entry.getHeader().getLogfileOffset(),</span><br><span class="line">                            entry.getHeader().getSchemaName(),</span><br><span class="line">                            entry.getHeader().getTableName(),</span><br><span class="line">                            eventType));</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> (eventType == EventType.QUERY || rowChage.getIsDdl()) &#123;</span><br><span class="line">                        log.info(<span class="string">" sql ----&gt; "</span> + rowChage.getSql());</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">for</span> (CanalEntry.RowData rowData : rowChage.getRowDatasList()) &#123;</span><br><span class="line">                        <span class="keyword">if</span> (eventType == EventType.DELETE) &#123;</span><br><span class="line">                            print(rowData.getBeforeColumnsList());</span><br><span class="line">                        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (eventType == CanalEntry.EventType.INSERT) &#123;</span><br><span class="line">                            print(rowData.getAfterColumnsList());</span><br><span class="line">                        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                            log.info(<span class="string">"-------&gt; before"</span>);</span><br><span class="line">                            print(rowData.getBeforeColumnsList());</span><br><span class="line">                            log.info(<span class="string">"-------&gt; after"</span>);</span><br><span class="line">                            print(rowData.getAfterColumnsList());</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (batchId != -<span class="number">1</span>) &#123;</span><br><span class="line">                connector.ack(batchId); <span class="comment">// 提交确认</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">(List&lt;Column&gt; columns)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (Column column : columns) &#123;</span><br><span class="line">            log.info(column.getName() + <span class="string">" : "</span> + column.getValue() + <span class="string">"    update="</span> + column.getUpdated());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>在程序运行后,用navicat连接数据库,在bestQ库:user表中插入两条信息:</p>
+<p><img src="/2020/07/29/一起来学高性能数据同步系统Canal/image-20200729202036621.png" alt="image-20200729202036621"></p>
+<p>从打印结果可以看到,单机模式的client成功连接Canal Server,并获取了数据库增量信息:</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2020</span>-<span class="number">07</span>-<span class="number">29</span> <span class="number">17</span>:<span class="number">27</span>:<span class="number">44</span>.<span class="number">549</span> INFO [main] com.bestqiang.canal.CanalStudyTest:<span class="number">55</span> say: ================&gt; 本次的的batchId为: <span class="number">29</span></span><br><span class="line"><span class="number">2020</span>-<span class="number">07</span>-<span class="number">29</span> <span class="number">17</span>:<span class="number">27</span>:<span class="number">44</span>.<span class="number">599</span> INFO [main] com.bestqiang.canal.CanalStudyTest:<span class="number">56</span> say: ================&gt; 本次请求的大小为: <span class="number">6</span></span><br><span class="line"><span class="number">2020</span>-<span class="number">07</span>-<span class="number">29</span> <span class="number">17</span>:<span class="number">27</span>:<span class="number">44</span>.<span class="number">613</span> INFO [main] com.bestqiang.canal.CanalStudyTest:<span class="number">73</span> say: binlog[mysql-bin.<span class="number">000002</span>:<span class="number">10462</span>] , name[bestQ,user] , eventType : INSERT</span><br><span class="line"><span class="number">2020</span>-<span class="number">07</span>-<span class="number">29</span> <span class="number">17</span>:<span class="number">27</span>:<span class="number">44</span>.<span class="number">614</span> INFO [main] com.bestqiang.canal.CanalStudyTest:<span class="number">106</span> say: id : <span class="number">30</span>    update=true</span><br><span class="line"><span class="number">2020</span>-<span class="number">07</span>-<span class="number">29</span> <span class="number">17</span>:<span class="number">27</span>:<span class="number">44</span>.<span class="number">615</span> INFO [main] com.bestqiang.canal.CanalStudyTest:<span class="number">106</span> say: sex : 女    update=true</span><br><span class="line"><span class="number">2020</span>-<span class="number">07</span>-<span class="number">29</span> <span class="number">17</span>:<span class="number">27</span>:<span class="number">44</span>.<span class="number">615</span> INFO [main] com.bestqiang.canal.CanalStudyTest:<span class="number">106</span> say: name : 小京    update=true</span><br><span class="line"><span class="number">2020</span>-<span class="number">07</span>-<span class="number">29</span> <span class="number">17</span>:<span class="number">27</span>:<span class="number">44</span>.<span class="number">616</span> INFO [main] com.bestqiang.canal.CanalStudyTest:<span class="number">73</span> say: binlog[mysql-bin.<span class="number">000002</span>:<span class="number">10738</span>] , name[bestQ,user] , eventType : INSERT</span><br><span class="line"><span class="number">2020</span>-<span class="number">07</span>-<span class="number">29</span> <span class="number">17</span>:<span class="number">27</span>:<span class="number">44</span>.<span class="number">617</span> INFO [main] com.bestqiang.canal.CanalStudyTest:<span class="number">106</span> say: id : <span class="number">31</span>    update=true</span><br><span class="line"><span class="number">2020</span>-<span class="number">07</span>-<span class="number">29</span> <span class="number">17</span>:<span class="number">27</span>:<span class="number">44</span>.<span class="number">617</span> INFO [main] com.bestqiang.canal.CanalStudyTest:<span class="number">106</span> say: sex : 男    update=true</span><br><span class="line"><span class="number">2020</span>-<span class="number">07</span>-<span class="number">29</span> <span class="number">17</span>:<span class="number">27</span>:<span class="number">44</span>.<span class="number">617</span> INFO [main] com.bestqiang.canal.CanalStudyTest:<span class="number">106</span> say: name : 小东    update=true</span><br></pre></td></tr></table></figure>
+<p>此外还有一个<a href="https://github.com/alibaba/canal/wiki/ClientAdapter" target="_blank" rel="noopener">ClientAdapter</a>是关于Canal的数据库同步功能,可以用于数据库之间的数据同步,主要将ETL的一些配置,有时间的话也可以试一下.</p>
+<h2 id="Canal管理页面和性能表现"><a href="#Canal管理页面和性能表现" class="headerlink" title="Canal管理页面和性能表现"></a>Canal管理页面和性能表现</h2><p>对应页面 <a href="https://github.com/alibaba/canal/wiki/Canal-Admin-QuickStart" target="_blank" rel="noopener">Canal Admin QuickStart</a> 和 <a href="https://github.com/alibaba/canal/wiki/performance" target="_blank" rel="noopener">Canal Performance</a> 以及它们的兄弟页面,这两章的介绍是关于Canal的WebUI操作界面管理和性能的一些测试评估的,写的挺详细的,可以都看一下了解一下怎么用,暂时不再做过多的讲解了,不作为重点.</p>
+<h2 id="Canal配置指南和整体设计"><a href="#Canal配置指南和整体设计" class="headerlink" title="Canal配置指南和整体设计"></a>Canal配置指南和整体设计</h2><ul>
+<li>配置指南<a href="https://github.com/alibaba/canal/wiki/AdminGuide" target="_blank" rel="noopener">AdminGuide</a></li>
+<li>整体设计<a href="https://github.com/alibaba/canal/wiki/DevGuide" target="_blank" rel="noopener">DevGuide</a></li>
+</ul>
+<p>这两章很重要!可以当作重点来看,由于官方文档比较详细优秀,所以直接看它就可以.</p>
+<p>配置指南中主要介绍了几个关键点:</p>
+<ul>
+<li>环境要求</li>
+<li>部署和基本配置</li>
+<li>HA模式的配置</li>
+<li>MySQL多节点解析配置</li>
+</ul>
+<p>整体设计中主要介绍了以下几个关键点:</p>
+<ul>
+<li>产品整体设计</li>
+<li>应用扩展方式</li>
+</ul>
+<p>由于这本身就是由Java写的,所以说熟悉Java的小伙伴很了解配置方式了,可以参看下图,直接根据配置指南在spring的配置文件改就行了,其实就是配置一个Instance的Bean对象,使用PropertyPlaceholderConfigurer引入对应的properties文件配置的一些属性填进去:</p>
+<p><img src="/2020/07/29/一起来学高性能数据同步系统Canal/2020-07-30 09-56-18 的屏幕截图.png" alt="2020-07-30 09-56-18 的屏幕截图"></p>
+<p>附上配置加载的图,意思就是我们的instance可以通过Rpc/Http读取配置来启动(阿里那边内部的平台),也可以直接用本地Spring配置来启动,我们要使用一般就用它了(官网上这张图貌似崩了,这是从其他博客copy的):</p>
+<p><img src="/2020/07/29/一起来学高性能数据同步系统Canal/4faa7c2e-ed95-3638-a3e2-8b481c8e4060.jpg" alt="img"></p>
+<p>值得说明的是,配置指南看完后还不足以让使用者了解如何去配置.需要结合整体设计文章仔细看一下.</p>
+<p><strong>整体设计中描述了Instance子模块的</strong></p>
+<ul>
+<li>eventParser: 数据源接入，模拟 slave 协议和 master 进行交互，协议解析</li>
+<li>eventSink: Parser 和 Store 链接器，进行数据过滤，加工，分发的工作</li>
+<li>eventStore: 数据存储 (可以存取在Memory, File, zk)</li>
+<li>metaManager: 增量订阅 &amp; 消费信息管理器</li>
+</ul>
+<p>其中eventSink模块有一句话这样说: 常见的 sink 业务有 1:n 和 n:1 形式，目前 GroupEventSink 主要是解决 n:1 的归并类业务</p>
+<p><strong>具体可以这样理解eventSink：</strong></p>
+<ul>
+<li>数据过滤：支持通配符的过滤模式，表名，字段内容等</li>
+<li>数据路由/分发：解决1:n (1个parser对应多个store的模式)</li>
+<li>数据归并：解决n:1 (多个parser对应1个store)</li>
+<li>数据加工：在进入store之前进行额外的处理，比如join</li>
+</ul>
+<p><strong>1:n和n:1业务分别指的什么?</strong></p>
+<p><strong>1 数据1:n业务 ：</strong></p>
+<p>为了合理的利用数据库资源， 一般常见的业务都是按照schema进行隔离，然后在mysql上层或者dao这一层面上，进行一个数据源路由，屏蔽数据库物理位置对开发的影响，阿里系主要是通过cobar/tddl来解决数据源路由问题。 所以，一般一个数据库实例上，会部署多个schema，每个schema会有由1个或者多个业务方关注。</p>
+<p><strong>2 数据n:1业务：</strong></p>
+<p>同样，当一个业务的数据规模达到一定的量级后，必然会涉及到水平拆分和垂直拆分的问题，针对这些拆分的数据需要处理时，就需要链接多个store进行处理，消费的位点就会变成多份，而且数据消费的进度无法得到尽可能有序的保证。 所以，在一定业务场景下，需要将拆分后的增量数据进行归并处理，比如按照时间戳/全局id进行排序归并.(参考了这个博客,也可以看看 <a href="https://www.cnblogs.com/yulu080808/p/8819260.html" target="_blank" rel="noopener">https://www.cnblogs.com/yulu080808/p/8819260.html</a>)</p>
+<p>由于这是一个Java应用,所以我们可以直接在maven项目里把对应的canal.deployer的jar包引进来,对其中的maven依赖的版本如Spring,Zookeeper等可以进行自由升级,然后对配置文件进行覆盖,然后对项目进行改造,实现我们专属的Canal.其实我们也可以把Client和Server部署在一起,可以降低延迟,提高效率.</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>这里主要梳理了Canal的大概学习步骤,主要还得去官方文档去学,我踩了一遍坑,把需要注意的点和学习顺序,以及自己的一些理解梳理了一下,注意实践和学习相结合,可以更好的理解Canal.</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+	<div>
+  
+    <div>
+
+    <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+
+</div>
+
+  
+	</div>
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>钱不钱的不重要，重要的是文章读了有收获，您说是吧？</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/wechatpay.png" alt="BestQiang 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/alipay.png" alt="BestQiang 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Canal/" rel="tag"><i class="fa fa-tag"></i> Canal</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div class="social_share">
+            
+            
+            
+              <div>
+                
+  <div class="bdsharebuttonbox">
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣网"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+    <a href="#" class="bds_tieba" data-cmd="tieba" title="分享到百度贴吧"></a>
+    <a href="#" class="bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+    <a href="#" class="bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a class="bds_count" data-cmd="count"></a>
+  </div>
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "2",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "share": {
+        "bdSize": "16",
+        "bdStyle": "0"
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];;
+</script>
+
+              </div>
+            
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/07/27/Guava-Caches和Guava-ListenableFuture学习/" rel="next" title="Guava Caches和Guava ListenableFuture学习">
+                <i class="fa fa-chevron-left"></i> Guava Caches和Guava ListenableFuture学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/07/31/一起来学习分布式协调服务器Zookeeper/" rel="prev" title="一起来学习分布式协调服务器Zookeeper">
+                一起来学习分布式协调服务器Zookeeper <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/Hermione.jpg" alt="BestQiang">
+            
+              <p class="site-author-name" itemprop="name">BestQiang</p>
+              <div class="site-description motion-element" itemprop="description">技术的进步来自于不懈的追求!</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">29</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">23</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/BestQiang" title="GitHub &rarr; https://github.com/BestQiang" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://blog.csdn.net/qq_29951485" title="CSDN &rarr; https://blog.csdn.net/qq_29951485" rel="noopener" target="_blank"><i class="fa fa-fw fa-heartbeat"></i>CSDN</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Canal简介"><span class="nav-text">Canal简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#学习"><span class="nav-text">学习</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#快速应用和API了解"><span class="nav-text">快速应用和API了解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#搭建环境"><span class="nav-text">搭建环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Client-API基本了解和连接Canal服务"><span class="nav-text">Client API基本了解和连接Canal服务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Canal管理页面和性能表现"><span class="nav-text">Canal管理页面和性能表现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Canal配置指南和整体设计"><span class="nav-text">Canal配置指南和整体设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结语"><span class="nav-text">结语</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2019 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">BestQiang</span>
+
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">9:33</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.1"></script>
+
+  <script src="/js/src/motion.js?v=7.0.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=7.0.1"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=7.0.1"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.1"></script>
+<script src="/js/src/post-details.js?v=7.0.1"></script>
+
+
+
+  
+
+
+  <script src="/js/src/next-boot.js?v=7.0.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+  
+
+<script src="//cdn1.lncld.net/static/js/3.11.1/av-min.js"></script>
+
+
+
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+<script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: true,
+    appId: 'AKC9sihabckQ6D8LK6tGoXuA-gzGzoHsz',
+    appKey: 'EEHjF9YRs6istjqzdeIXKHem',
+    placeholder: 'Just go go',
+    avatar: 'wavatar',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: true,
+    lang: '' || 'zh-cn'
+  });
+</script>
+
+
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+<!-- 页面点击小红心 --> <script type="text/javascript" src="/js/src/love.js"></script>
