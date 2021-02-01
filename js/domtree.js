@@ -34,7 +34,7 @@
         quantity = 250,
 		snow = 200,
         types = ['text', 'select', 'progress', 'meter', 'button', 'radio', 'checkbox'],
-        greetings = ['ᵧₒᵤ❤', 'Dear YY', 'See you tomorrow', 'Good luck', 'Merry Christmas', '(๑′ᴗ‵๑)Ｉ', '天天开心', '莹莹最棒', 'Lᵒᵛᵉ', 'See you tomorrow', 'Happy Holidays', 'Only if you asked', 'to see me', 'our meeting would', 'be meaningful', 'to me', '相遇', '想见'];
+        greetings = ['新年快乐！','ᵧₒᵤ❤', 'Dear YY', 'See you tomorrow', 'Good luck', 'Merry Christmas', '(๑′ᴗ‵๑)Ｉ', '天天开心', '莹莹最棒', 'Lᵒᵛᵉ', 'See you tomorrow', 'Happy Holidays', 'Only if you asked', 'to see me', 'our meeting would', 'be meaningful', 'to me', '相遇', '想见'];
 
     var tree = document.querySelector('.tree'),
         treeRotation = 0;
