@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>🎄 For You</title>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(#000 30%, #02010a 100%);
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      font-family: cursive;
+    }
+
+    .tree {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform-style: preserve-3d;
+      transform-origin: center center;
+      animation: treeRotate 30s linear infinite;
+    }
+
+    @keyframes treeRotate {
+      from {
+        transform: translate(-50%, -50%) rotateY(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotateY(360deg);
+      }
+    }
+
+    .ornament {
+      position: absolute;
+      color: #fff;
+      font-size: 14px;
+      padding: 6px 12px;
+      background: rgba(255,80,80,0.2);
+      border-radius: 20px;
+      white-space: nowrap;
+      box-shadow: 0 0 12px rgba(255,120,120,0.8),
+      0 0 30px rgba(255,80,80,0.6);
+      animation: glow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 6px rgba(255,120,120,0.4);
+        opacity: 0.6;
+      }
+      to {
+        box-shadow: 0 0 20px rgba(255,200,200,1);
+        opacity: 1;
+      }
+    }
+
+    .snow {
+      position: absolute;
+      opacity: 0.9;
+      animation: snowFall linear infinite;
+    }
+
+    @keyframes snowFall {
+      from {
+        transform: translate3d(var(--x), -50px, var(--z));
+      }
+      to {
+        transform: translate3d(calc(var(--x) + 100px), 700px, var(--z));
+      }
+    }
+
+    .star {
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      font-size: 48px;
+      transform: translateX(-50%);
+      text-shadow: 0 0 30px red;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.3); }
+      100% { transform: translateX(-50%) scale(1); }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="tree"></div>
+
+<audio id="audio" src="music.mp3" loop></audio>
+
+<script>
+  (function () {
+
+    document.onclick = function () {
+      document.getElementById('audio').play();
+    };
+
+    const width = 500;
+    const height = 600;
+    const quantity = 180;
+    const snowCount = 200;
+
+    const greetings = [
+      'Dear 琳琳 ❤️',
+      'Merry Christmas 🎄',
+      '遇见你是最好的礼物',
+      '今晚的雪为你而下',
+      'Only you',
+      '想见你',
+      'See you tomorrow',
+      'Love you 3000',
+      '你在，我就开心',
+      '每天都想你'
+    ];
+
+    const tree = document.querySelector('.tree');
+    tree.style.width = width + 'px';
+    tree.style.height = height + 'px';
+
+    // 🎄 树顶爱心
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.innerHTML = '❤️';
+    tree.appendChild(star);
+
+    // 🎁 装饰
+    for (let i = 0; i < quantity; i++) {
+      const el = document.createElement('div');
+      el.className = 'ornament';
+      el.textContent = greetings[Math.floor(Math.random() * greetings.length)];
+
+      const y = Math.random() * height;
+      const radius = (y / height) * width / 2;
+
+      const angle = Math.random() * 360;
+      const x = Math.cos(angle * Math.PI / 180) * radius + width / 2;
+      const z = Math.sin(angle * Math.PI / 180) * radius;
+
+      el.style.transform = `translate3d(${x}px, ${y}px, ${z}px) rotateY(${angle}deg)`;
+
+      tree.appendChild(el);
+    }
+
+    // ❄️ 雪花
+    for (let i = 0; i < snowCount; i++) {
+      const snow = document.createElement('img');
+      snow.src = 'snowflake.png';
+      snow.className = 'snow';
+      snow.style.width = '10px';
+      snow.style.height = '10px';
+
+      const x = Math.random() * window.innerWidth;
+      const z = Math.random() * 600 - 300;
+
+      snow.style.setProperty('--x', x + 'px');
+      snow.style.setProperty('--z', z + 'px');
+      snow.style.animationDuration = (10 + Math.random() * 20) + 's';
+
+      document.body.appendChild(snow);
+    }
+
+  })();
+</script>
+
+</body>
+</html>
